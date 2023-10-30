@@ -37,6 +37,8 @@
           clippy
           rust-analyzer
           libiconv
+          nodejs_20
+          nodePackages_latest.pnpm
         ];
       in {
         devShell = pkgs.mkShell {
