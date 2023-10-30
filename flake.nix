@@ -9,37 +9,34 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        libraries = with pkgs; [
-          webkitgtk
-          gtk3
-          cairo
-          gdk-pixbuf
-          glib
-          dbus
-          openssl_3
-          librsvg
-        ];
+        libraries = with pkgs;
+          [ gtk3 cairo gdk-pixbuf glib dbus openssl_3 librsvg ]
+          ++ lib.lists.optionals
+          (system != "x86_64-darwin" && system != "aarch64-darwin")
+          [ webkitgtk ]; # webkitgtk is broken on darwin currently
 
-        packages = with pkgs; [
-          curl
-          wget
-          pkg-config
-          dbus
-          openssl_3
-          glib
-          gtk3
-          libsoup
-          webkitgtk
-          librsvg
-          cargo
-          rustc
-          git
-          clippy
-          rust-analyzer
-          libiconv
-          nodejs_20
-          nodePackages_latest.pnpm
-        ];
+        packages = with pkgs;
+          [
+            curl
+            wget
+            pkg-config
+            dbus
+            openssl_3
+            glib
+            gtk3
+            libsoup
+            librsvg
+            cargo
+            rustc
+            git
+            clippy
+            rust-analyzer
+            libiconv
+            nodejs_20
+            nodePackages_latest.pnpm
+          ] ++ lib.lists.optionals
+          (system != "x86_64-darwin" && system != "aarch64-darwin")
+          [ webkitgtk ];
       in {
         devShell = pkgs.mkShell {
           buildInputs = packages;
