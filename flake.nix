@@ -10,7 +10,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
 
         libraries = with pkgs; [
-          # webkitgtk
+          webkitgtk
           gtk3
           cairo
           gdk-pixbuf
@@ -29,7 +29,7 @@
           glib
           gtk3
           libsoup
-          # webkitgtk
+          webkitgtk
           librsvg
           cargo
           rustc
