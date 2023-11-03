@@ -2,9 +2,9 @@
 name = "jdt"
 version = "0.0.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+authors = ["Mat Jones", "Robert Jones"]
+license = "MIT"
+repository = "https://github.com/mrjones2014/jdt"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
