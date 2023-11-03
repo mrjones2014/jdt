@@ -1,7 +1,7 @@
 use types::ImageRepo;
 use url::{ParseError, Url};
 
-mod types;
+pub mod types;
 
 #[derive(Debug)]
 pub enum Error {
