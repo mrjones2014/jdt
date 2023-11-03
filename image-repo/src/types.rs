@@ -23,3 +23,17 @@ pub struct ImageRepo {
     pub description: Option<String>,
     pub images: Vec<ImageData>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::ImageRepo;
+
+    #[test]
+    fn deserializes_from_test_repo() {
+        let repo_json = include_str!("../examples/example_repo.json");
+        let result = serde_json::from_str::<ImageRepo>(repo_json);
+        assert!(result.is_ok());
+        let repo = result.unwrap();
+        assert!(!repo.images.is_empty());
+    }
+}
