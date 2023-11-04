@@ -12,10 +12,11 @@ decoding = ["dep:image", "dep:imghdr", "dep:ring", "dep:data-encoding"]
 serde = { version = "1.0", features = ["derive"] }
 reqwest = { version = "0.11", features = ["json"] }
 url = { version = "2", features = ["serde"] }
+ring = "0.17"
+data-encoding = "2"
 image = { version = "0.24", optional = true }
 imghdr = { version = "0.7", optional = true }
-ring = { version = "0.17", optional = true }
-data-encoding = { version = "2", optional = true }
+
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

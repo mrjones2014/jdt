@@ -17,6 +17,14 @@ pub struct ImageData {
     pub format: SupportedFormat,
 }
 
+impl ImageData {
+    pub fn verify_checksum(&self, img_bytes: &[u8]) -> bool {
+        let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
+        let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
+        hash == self.hash
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ImageRepo {
     pub name: String,
