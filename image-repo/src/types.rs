@@ -102,6 +102,7 @@ impl TryFrom<(Url, Vec<u8>)> for ImageData {
     }
 }
 
+#[cfg(feature = "decoding")]
 impl TryFrom<(Url, &[u8])> for ImageData {
     type Error = ImgError;
 
