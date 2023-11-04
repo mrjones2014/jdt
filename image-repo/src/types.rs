@@ -8,6 +8,19 @@ pub enum SupportedFormat {
     Png,
 }
 
+impl std::fmt::Display for SupportedFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                SupportedFormat::Jpg => "jpg",
+                SupportedFormat::Png => "png",
+            }
+        )
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ImageData {
     pub url: Url,
@@ -18,10 +31,20 @@ pub struct ImageData {
 }
 
 impl ImageData {
+    /// Given a byte slice, get a SHA256 checksum of it and
+    /// verify that it matches the [`ImageData::hash`] property stored
+    /// in this [`ImageData`].
     pub fn verify_checksum(&self, img_bytes: &[u8]) -> bool {
         let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
         let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
         hash == self.hash
+    }
+
+    /// Deterministically generate the filepath tail for the given
+    /// [`ImageData`]. This path should be appended to the storage
+    /// root under `$XDG_CACHE_HOME` before storing.
+    pub fn filepath_tail(&self) -> String {
+        format!("{}.{}", self.hash, self.format)
     }
 }
 
