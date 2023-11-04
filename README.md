@@ -26,7 +26,7 @@ A repository is a JSON files that looks like the following (png and jpg images a
 You can use the following command to generate the image data from URLs:
 
 ```bash
-cargo run -p image-repo -- "https://stsci-opo.org/STScI-01GA6KKWG229B16K4Q38CH3BXS.png"  "https://stsci-opo.org/STScI-01G8H49RQ0E48YDM8WKW9PP5XS.png"  "https://stsci-opo.org/STScI-01G8H1K2BCNATEZSKVRN9Z69SR.png" "https://stsci-opo.org/STScI-01G8GZQ3ZFJRD8YF8YZWMAXCE3.png"
+cargo run -p repogen -- "https://stsci-opo.org/STScI-01GA6KKWG229B16K4Q38CH3BXS.png"  "https://stsci-opo.org/STScI-01G8H49RQ0E48YDM8WKW9PP5XS.png"  "https://stsci-opo.org/STScI-01G8H1K2BCNATEZSKVRN9Z69SR.png" "https://stsci-opo.org/STScI-01G8GZQ3ZFJRD8YF8YZWMAXCE3.png"
 ```
 
 And you should get output like the following, which can be copy/pasted into the repo JSON:
