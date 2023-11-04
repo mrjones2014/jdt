@@ -89,10 +89,12 @@ pub struct ImageRepo {
 
 impl ImageRepo {
     pub fn to_file_name(&self) -> Result<String, serde_json::Error> {
-        serde_json::to_string(&self).map(|json| {
-            let hash = ring::digest::digest(&ring::digest::SHA256, json.as_bytes());
-            data_encoding::HEXLOWER.encode(hash.as_ref())
-        })
+        serde_json::to_string(&self)
+            .map(|json| {
+                let hash = ring::digest::digest(&ring::digest::SHA256, json.as_bytes());
+                data_encoding::HEXLOWER.encode(hash.as_ref())
+            })
+            .map(|hash| format!("{hash}.json"))
     }
 }
 
