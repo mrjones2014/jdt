@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "lowercase")]
-pub enum SupportedFiletype {
+pub enum SupportedFormat {
     Jpg,
     Png,
 }
@@ -11,9 +11,9 @@ pub enum SupportedFiletype {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ImageData {
     pub url: Url,
-    pub width: i16,
-    pub height: i16,
-    pub filetype: SupportedFiletype,
+    pub width: u32,
+    pub height: u32,
+    pub format: SupportedFormat,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
