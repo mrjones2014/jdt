@@ -10,8 +10,5 @@ serde_json = { version = "1.0", features = ["preserve_order"] }
 serde = { version = "1.0", features = ["derive"] }
 reqwest = { version = "0.11", features = ["json", "blocking"] }
 url = { version = "2", features = ["serde"] }
-imghdr = "0.7"
-tempfile = "3"
-image-repo = { path = "../image-repo" }
-image = "0.24"
+image-repo = { path = "../image-repo", features = ["decoding"] }
 colored_json = "4"

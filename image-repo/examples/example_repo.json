@@ -4,27 +4,31 @@
   "images": [
     {
       "url": "https://stsci-opo.org/STScI-01GA6KKWG229B16K4Q38CH3BXS.png",
+      "hash": "e89fb6764fa3f176e0abeea3b55d8b055195dca3fc1573753deb4612cb7834a9",
       "width": 14575,
       "height": 8441,
-      "filetype": "png"
+      "format": "png"
     },
     {
       "url": "https://stsci-opo.org/STScI-01G8H49RQ0E48YDM8WKW9PP5XS.png",
+      "hash": "128642a0526db3a3d3aabd169c8d2abfcc38712ed60ba06eedd6ba16da751d90",
       "width": 12654,
       "height": 12132,
-      "filetype": "png"
+      "format": "png"
     },
     {
       "url": "https://stsci-opo.org/STScI-01G8H1K2BCNATEZSKVRN9Z69SR.png",
+      "hash": "1baceca06536f36a140f6fd537a8fd0027c2942ffa9a30dd2cde6d50b90c07e4",
       "width": 4537,
       "height": 4630,
-      "filetype": "png"
+      "format": "png"
     },
     {
       "url": "https://stsci-opo.org/STScI-01G8GZQ3ZFJRD8YF8YZWMAXCE3.png",
+      "hash": "c4b4d6b169152b360a591fe48ddc8140ae43b5374438a37c14ce900ca0f605f5",
       "width": 4833,
       "height": 4501,
-      "filetype": "png"
+      "format": "png"
     }
   ]
 }

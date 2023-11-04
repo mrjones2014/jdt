@@ -1,21 +1,13 @@
-use std::{
-    env,
-    error::Error,
-    fmt::Display,
-    io::{Cursor, Read},
-};
+use std::{env, error::Error, fmt::Display, io::Read};
 
 use colored_json::ToColoredJson;
-use image::{io::Reader, GenericImageView, ImageFormat};
-use image_repo::types::{ImageData, SupportedFormat};
+use image_repo::types::ImageData;
 use reqwest::StatusCode;
 use url::Url;
 
 #[derive(Debug)]
 enum Errors {
     HttpFailed,
-    ImgFormatDetectionFailed,
-    UnsupportedImgFormat,
 }
 
 impl Display for Errors {
@@ -25,8 +17,6 @@ impl Display for Errors {
             "{}",
             match self {
                 Errors::HttpFailed => "Failed to download image.",
-                Errors::ImgFormatDetectionFailed => "Failed to detect image format.",
-                Errors::UnsupportedImgFormat => "Unsupported image format.",
             }
         )
     }
@@ -42,6 +32,7 @@ fn main() {
     let mut errors: Vec<Box<dyn Error>> = vec![];
     let mut images: Vec<ImageData> = vec![];
     for url in env::args().skip(1) {
+        eprintln!("Downloading image {url} ...");
         //
         // Download image
         //
@@ -62,49 +53,17 @@ fn main() {
             continue;
         }
 
-        //
-        // Detect format
-        //
-        let format = imghdr::from_bytes(&img_bytes);
-        if format.is_none() {
-            errors.push(Box::new(Errors::ImgFormatDetectionFailed));
-            continue;
-        }
-        let format = match format.unwrap() {
-            imghdr::Type::Jpeg => Some(SupportedFormat::Jpg),
-            imghdr::Type::Png => Some(SupportedFormat::Png),
-            _ => None,
-        };
-        if format.is_none() {
-            errors.push(Box::new(Errors::UnsupportedImgFormat));
-            continue;
-        }
-        let format = format.unwrap();
+        eprintln!("Decoding image...");
 
-        //
-        // Detect dimensions
-        //
-        let img_reader = Reader::with_format(
-            Cursor::new(img_bytes),
-            match format {
-                SupportedFormat::Jpg => ImageFormat::Jpeg,
-                SupportedFormat::Png => ImageFormat::Png,
-            },
-        )
-        .decode();
-        if let Err(e) = img_reader {
+        let img_data = ImageData::try_from((Url::parse(&url).unwrap(), img_bytes));
+        if let Err(e) = img_data {
             errors.push(Box::new(e));
             continue;
         }
-        let (width, height) = img_reader.unwrap().dimensions();
-
-        let img_data = ImageData {
-            url: Url::parse(url.as_str()).unwrap(),
-            width,
-            height,
-            format,
-        };
+        let img_data = img_data.unwrap();
         images.push(img_data);
+
+        eprintln!("Successfully processed image!");
     }
 
     let json = serde_json::to_string_pretty(&images).unwrap();

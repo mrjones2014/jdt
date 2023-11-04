@@ -11,6 +11,7 @@ pub enum SupportedFormat {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ImageData {
     pub url: Url,
+    pub hash: String,
     pub width: u32,
     pub height: u32,
     pub format: SupportedFormat,
@@ -24,9 +25,96 @@ pub struct ImageRepo {
     pub images: Vec<ImageData>,
 }
 
+#[cfg(feature = "decoding")]
+#[derive(Debug)]
+pub enum ImgError {
+    CouldntDetectFormat,
+    UnsupportedFormat(String),
+    DecodingFailed(image::ImageError),
+}
+
+#[cfg(feature = "decoding")]
+impl From<image::ImageError> for ImgError {
+    fn from(value: image::ImageError) -> Self {
+        Self::DecodingFailed(value)
+    }
+}
+
+#[cfg(feature = "decoding")]
+impl std::fmt::Display for ImgError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                ImgError::CouldntDetectFormat => "Unable to detect image format from bytes.".into(),
+                ImgError::UnsupportedFormat(fmt) => format!("Unsupported image format: {fmt}"),
+                ImgError::DecodingFailed(e) => format!("Failed to decode image: {e}"),
+            }
+        )
+    }
+}
+
+#[cfg(feature = "decoding")]
+impl std::error::Error for ImgError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
+}
+
+#[cfg(feature = "decoding")]
+impl TryFrom<(Url, Vec<u8>)> for ImageData {
+    type Error = ImgError;
+
+    fn try_from((url, img_bytes): (Url, Vec<u8>)) -> Result<Self, Self::Error> {
+        Self::try_from((url, img_bytes.as_slice()))
+    }
+}
+
+impl TryFrom<(Url, &[u8])> for ImageData {
+    type Error = ImgError;
+
+    fn try_from((url, img_bytes): (Url, &[u8])) -> Result<Self, Self::Error> {
+        use image::GenericImageView;
+        use std::io::Cursor;
+        let format = if let Some(format) = imghdr::from_bytes(img_bytes) {
+            format
+        } else {
+            return Err(ImgError::CouldntDetectFormat);
+        };
+        let format = match format {
+            imghdr::Type::Jpeg => SupportedFormat::Jpg,
+            imghdr::Type::Png => SupportedFormat::Png,
+            _ => return Err(ImgError::UnsupportedFormat(format!("{format:?}"))),
+        };
+
+        let img_reader = image::io::Reader::with_format(
+            Cursor::new(&img_bytes),
+            match format {
+                SupportedFormat::Jpg => image::ImageFormat::Jpeg,
+                SupportedFormat::Png => image::ImageFormat::Png,
+            },
+        )
+        .decode()?;
+        let (width, height) = img_reader.dimensions();
+        let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
+        let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
+
+        Ok(ImageData {
+            url,
+            width,
+            height,
+            format,
+            hash,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::ImageRepo;
+    use url::Url;
+
+    use super::{ImageData, ImageRepo};
 
     #[test]
     fn deserializes_from_test_repo() {
@@ -35,5 +123,24 @@ mod tests {
         assert!(result.is_ok());
         let repo = result.unwrap();
         assert!(!repo.images.is_empty());
+    }
+
+    #[test]
+    fn decodes_from_btye_vec() {
+        let img_bytes = include_bytes!("../ferris.png").to_vec();
+        let url = Url::parse("https://rustacean.net/assets/rustacean-flat-noshadow.png").unwrap();
+        let result = ImageData::try_from((url, img_bytes));
+        assert!(result.is_ok());
+        let data = result.unwrap();
+        assert_eq!(
+            serde_json::to_string_pretty(&data).unwrap(),
+            r#"{
+  "url": "https://rustacean.net/assets/rustacean-flat-noshadow.png",
+  "hash": "b64500c829882b4abed9d768dbb396569ff1d5e6baf7d274460ab372fe53aadb",
+  "width": 460,
+  "height": 307,
+  "format": "png"
+}"#
+        );
     }
 }
