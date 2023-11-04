@@ -1,7 +1,7 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum SupportedFormat {
     Jpg,
@@ -30,20 +30,51 @@ pub struct ImageData {
     pub format: SupportedFormat,
 }
 
+#[derive(Debug)]
+pub enum ChecksumError {
+    /// Checksums do not match. The contained value
+    /// is the internal checksum first, then the checksum
+    /// of the data passed by the caller.
+    NoMatch((String, String)),
+}
+
+impl std::fmt::Display for ChecksumError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let (expected, received) = match self {
+            ChecksumError::NoMatch((expected, received)) => (expected, received),
+        };
+        write!(
+            f,
+            "Checksums do not match. Expected {} but got {}",
+            expected, received
+        )
+    }
+}
+
+impl std::error::Error for ChecksumError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
+}
+
 impl ImageData {
     /// Given a byte slice, get a SHA256 checksum of it and
     /// verify that it matches the [`ImageData::hash`] property stored
     /// in this [`ImageData`].
-    pub fn verify_checksum(&self, img_bytes: &[u8]) -> bool {
+    pub fn verify_checksum(&self, img_bytes: &[u8]) -> Result<(), ChecksumError> {
         let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
         let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
-        hash == self.hash
+        if hash == self.hash {
+            Ok(())
+        } else {
+            Err(ChecksumError::NoMatch((self.hash.clone(), hash)))
+        }
     }
 
     /// Deterministically generate the filepath tail for the given
     /// [`ImageData`]. This path should be appended to the storage
     /// root under `$XDG_CACHE_HOME` before storing.
-    pub fn filepath_tail(&self) -> String {
+    pub fn to_file_name(&self) -> String {
         format!("{}.{}", self.hash, self.format)
     }
 }
