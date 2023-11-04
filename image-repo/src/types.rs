@@ -87,6 +87,15 @@ pub struct ImageRepo {
     pub images: Vec<ImageData>,
 }
 
+impl ImageRepo {
+    pub fn to_file_name(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(&self).map(|json| {
+            let hash = ring::digest::digest(&ring::digest::SHA256, json.as_bytes());
+            data_encoding::HEXLOWER.encode(hash.as_ref())
+        })
+    }
+}
+
 #[cfg(feature = "decoding")]
 #[derive(Debug)]
 pub enum ImgError {

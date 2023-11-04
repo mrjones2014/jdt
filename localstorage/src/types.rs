@@ -13,7 +13,8 @@ pub trait TryIntoStoragePath {
 
 impl TryIntoStoragePath for ImageRepo {
     fn try_into_storage_path(&self) -> Result<PathBuf> {
-        storage_root(StorageType::Repo).map(|root| root.join(format!("{}.json", self.name)))
+        let file_name = self.to_file_name()?;
+        storage_root(StorageType::Repo).map(|root| root.join(file_name))
     }
 }
 
