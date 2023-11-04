@@ -1,10 +1,9 @@
-mod error;
-mod types;
+pub mod error;
+pub mod types;
 
 use error::Error;
 use error::Result;
 use reqwest::StatusCode;
-use reqwest::Url;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
