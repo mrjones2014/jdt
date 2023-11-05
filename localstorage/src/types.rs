@@ -1,4 +1,8 @@
-use crate::{download_bytes, error::Result, storage_root, StorageType};
+use crate::{
+    download_bytes,
+    error::{Error, Result},
+    storage_root, StorageType,
+};
 use async_trait::async_trait;
 use image_repo::types::{ImageData, ImageRepo};
 use reqwest::Url;
@@ -42,7 +46,17 @@ impl DownloadableResource<ImageRepo> for Url {
     async fn download_resource(&self) -> Result<(ImageRepo, Vec<u8>)> {
         let bytes = download_bytes(self).await?;
         // verify the contents are proper JSON schema
-        let repo = serde_json::from_slice::<ImageRepo>(&bytes)?;
+        let mut repo = serde_json::from_slice::<ImageRepo>(&bytes)?;
+        // verify the update URL
+        match &repo.update_url {
+            // Check update URL matches
+            Some(url) if url != self => {
+                return Err(Error::InvalidUpdateUrl((url.to_string(), self.to_string())))
+            }
+            // Inject update URL it was downloaded from if there is none
+            None => repo.update_url = Some(self.clone()),
+            _ => {}
+        };
         Ok((repo, bytes))
     }
 }

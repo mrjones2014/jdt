@@ -1,7 +1,7 @@
 use std::{fmt::Display, path::PathBuf, string::FromUtf8Error};
 
 use image_repo::types::ChecksumError;
-use reqwest::StatusCode;
+use reqwest::{StatusCode, Url};
 
 /// Errors that can occur dealing with syncing local storage
 #[derive(Debug)]
@@ -26,6 +26,8 @@ pub enum Error {
     FileNotFound(PathBuf),
     /// Failed to process file metadata
     FileMetadataFailed,
+    /// Update URL field of JSON is different from the URL the file was downlaoded from.
+    InvalidUpdateUrl((String, String)),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -47,6 +49,10 @@ impl Display for Error {
                     format!("File already exists: {}", path.to_string_lossy()),
                 Error::FileNotFound(path) => format!("No such file: {}", path.to_string_lossy()),
                 Error::FileMetadataFailed => "Failed to process file metadata.".to_string(),
+                Error::InvalidUpdateUrl((expected, received)) => format!(
+                    "Repository JSON file was downloaded from {} but specifies update URL as {}",
+                    expected, received
+                ),
             }
         )
     }
