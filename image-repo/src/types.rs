@@ -62,8 +62,7 @@ impl ImageData {
     /// verify that it matches the [`ImageData::hash`] property stored
     /// in this [`ImageData`].
     pub fn verify_checksum(&self, img_bytes: &[u8]) -> Result<(), ChecksumError> {
-        let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
-        let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
+        let hash = crypto::checksum_string(img_bytes);
         if hash == self.hash {
             Ok(())
         } else {
@@ -90,10 +89,7 @@ pub struct ImageRepo {
 impl ImageRepo {
     pub fn to_file_name(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self)
-            .map(|json| {
-                let hash = ring::digest::digest(&ring::digest::SHA256, json.as_bytes());
-                data_encoding::HEXLOWER.encode(hash.as_ref())
-            })
+            .map(|json| crypto::checksum_string(json.as_bytes()))
             .map(|hash| format!("{hash}.json"))
     }
 }
@@ -171,8 +167,7 @@ impl TryFrom<(Url, &[u8])> for ImageData {
         )
         .decode()?;
         let (width, height) = img_reader.dimensions();
-        let hash = ring::digest::digest(&ring::digest::SHA256, img_bytes);
-        let hash = data_encoding::HEXLOWER.encode(hash.as_ref());
+        let hash = crypto::checksum_string(img_bytes);
 
         Ok(ImageData {
             url,
