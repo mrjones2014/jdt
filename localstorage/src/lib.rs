@@ -3,12 +3,15 @@ pub mod types;
 
 use error::Error;
 use error::Result;
+use image_repo::types::ImageRepo;
 use reqwest::StatusCode;
 use std::path::PathBuf;
 use tokio::fs;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use tokio_stream::wrappers::ReadDirStream;
+use tokio_stream::StreamExt;
 use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
@@ -114,6 +117,8 @@ where
     Ok((resource, path))
 }
 
+/// Check if a file has not been updated since longer than the specified interval.
+/// This checks the file modified metadata.
 pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Result<bool> {
     let metadata = fs::metadata(path).await?;
     let modified_time = metadata.modified()?;
@@ -121,4 +126,20 @@ pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Re
         .elapsed()
         .map_err(|_| Error::FileMetadataFailed)?;
     Ok(elapsed > update_interval.into())
+}
+
+/// List all insatlled image repositories.
+pub async fn list_repositories() -> Result<Vec<ImageRepo>> {
+    let storage_root = storage_root(StorageType::Repo)?;
+    let mut repos = vec![];
+    let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
+    while let Some(file) = dir_stream.next().await {
+        let mut file = File::open(file?.path()).await?;
+        let mut file_bytes = vec![];
+        file.read_to_end(&mut file_bytes).await?;
+        let repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
+        repos.push(repo);
+    }
+
+    Ok(repos)
 }
