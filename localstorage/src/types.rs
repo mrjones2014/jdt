@@ -2,7 +2,11 @@ use crate::{download_bytes, error::Result, storage_root, StorageType};
 use async_trait::async_trait;
 use image_repo::types::{ImageData, ImageRepo};
 use reqwest::Url;
-use std::path::PathBuf;
+use serde::{Deserialize, Serialize};
+use std::{path::PathBuf, time::Duration};
+
+const ONE_DAY: u64 = 86_400;
+const ONE_WEEK: u64 = 604_800;
 
 /// Trait to allow getting a full filepath from
 /// something that should be stored to disk.
@@ -49,5 +53,20 @@ impl DownloadableResource<ImageData> for ImageData {
         let bytes = download_bytes(self.url.clone()).await?;
         self.verify_checksum(&bytes)?;
         Ok((self.clone(), bytes))
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub enum UpdateInterval {
+    Days(u8),
+    Weeks(u8),
+}
+
+impl From<UpdateInterval> for Duration {
+    fn from(val: UpdateInterval) -> Self {
+        match val {
+            UpdateInterval::Days(n) => Duration::from_secs(ONE_DAY * (n as u64)),
+            UpdateInterval::Weeks(n) => Duration::from_secs(ONE_WEEK * (n as u64)),
+        }
     }
 }

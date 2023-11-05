@@ -46,7 +46,7 @@ impl Display for Error {
                 Error::FileAlreadyExists(path) =>
                     format!("File already exists: {}", path.to_string_lossy()),
                 Error::FileNotFound(path) => format!("No such file: {}", path.to_string_lossy()),
-                Error::FileMetadataFailed => format!("Failed to process file metadata."),
+                Error::FileMetadataFailed => "Failed to process file metadata.".to_string(),
             }
         )
     }

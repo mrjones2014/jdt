@@ -4,25 +4,19 @@ pub mod types;
 use error::Error;
 use error::Result;
 use reqwest::StatusCode;
-use serde::Deserialize;
-use serde::Serialize;
 use std::fs;
 use std::fs::File;
-use std::i8;
 use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
-use std::time::Duration;
 use types::DownloadableResource;
 use types::TryIntoStoragePath;
+use types::UpdateInterval;
 
 #[cfg(debug_assertions)]
 const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
-
-const ONE_DAY: u64 = 86_400;
-const ONE_WEEK: u64 = 604_800;
 
 #[derive(Debug)]
 pub enum StorageType {
@@ -117,21 +111,6 @@ where
     let (resource, bytes) = downloadable.download_resource().await?;
     let path = store_resource(&resource, bytes.as_slice(), true)?;
     Ok((resource, path))
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub enum UpdateInterval {
-    Days(u8),
-    Weeks(u8),
-}
-
-impl From<UpdateInterval> for Duration {
-    fn from(val: UpdateInterval) -> Self {
-        match val {
-            UpdateInterval::Days(n) => Duration::from_secs(ONE_DAY * (n as u64)),
-            UpdateInterval::Weeks(n) => Duration::from_secs(ONE_WEEK * (n as u64)),
-        }
-    }
 }
 
 pub fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Result<bool> {
