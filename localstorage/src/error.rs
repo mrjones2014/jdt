@@ -24,6 +24,8 @@ pub enum Error {
     FileAlreadyExists(PathBuf),
     /// Local resource did not exist
     FileNotFound(PathBuf),
+    /// Failed to process file metadata
+    FileMetadataFailed,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -44,6 +46,7 @@ impl Display for Error {
                 Error::FileAlreadyExists(path) =>
                     format!("File already exists: {}", path.to_string_lossy()),
                 Error::FileNotFound(path) => format!("No such file: {}", path.to_string_lossy()),
+                Error::FileMetadataFailed => format!("Failed to process file metadata."),
             }
         )
     }
