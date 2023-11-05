@@ -1,7 +1,7 @@
 use std::{fmt::Display, path::PathBuf, string::FromUtf8Error};
 
 use image_repo::types::ChecksumError;
-use reqwest::{StatusCode, Url};
+use reqwest::StatusCode;
 
 /// Errors that can occur dealing with syncing local storage
 #[derive(Debug)]
