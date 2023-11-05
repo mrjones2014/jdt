@@ -13,7 +13,7 @@ pub trait TryIntoStoragePath {
 
 impl TryIntoStoragePath for ImageRepo {
     fn try_into_storage_path(&self) -> Result<PathBuf> {
-        let file_name = self.to_file_name()?;
+        let file_name = self.to_file_name();
         storage_root(StorageType::Repo).map(|root| root.join(file_name))
     }
 }
@@ -48,15 +48,6 @@ impl DownloadableResource<ImageData> for ImageData {
     async fn download_resource(&self) -> Result<(ImageData, Vec<u8>)> {
         let bytes = download_bytes(self.url.clone()).await?;
         self.verify_checksum(&bytes)?;
-        Ok((
-            ImageData {
-                url: self.url.clone(),
-                hash: self.hash.clone(),
-                width: self.width,
-                height: self.height,
-                format: self.format,
-            },
-            bytes,
-        ))
+        Ok((self.clone(), bytes))
     }
 }

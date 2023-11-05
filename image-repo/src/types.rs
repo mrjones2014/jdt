@@ -21,7 +21,7 @@ impl std::fmt::Display for SupportedFormat {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageData {
     pub url: Url,
@@ -91,10 +91,16 @@ pub struct ImageRepo {
 }
 
 impl ImageRepo {
-    pub fn to_file_name(&self) -> Result<String, serde_json::Error> {
-        serde_json::to_string(&self)
-            .map(|json| encoding::checksum_string(json.as_bytes()))
-            .map(|hash| format!("{hash}.json"))
+    pub fn to_file_name(&self) -> String {
+        let raw_filename = [
+            self.name.to_string(),
+            self.update_url
+                .clone()
+                .map(|url| url.to_string())
+                .unwrap_or_else(|| "".into()),
+        ]
+        .join(",");
+        format!("{}.json", encoding::safe_filename(raw_filename))
     }
 }
 

@@ -92,12 +92,15 @@ where
 /// Example:
 ///
 /// ```no_run
+/// # async fn test() {
+/// # use reqwest::Url;
 /// // (ImageRepo, Vec<u8>)
-/// let (img_repo, json_bytes) = download_resource_to_file(Url::parse("").unwrap())
+/// let (img_repo, json_bytes) = localstorage::download_resource_to_file(Url::parse("").unwrap())
 ///     .await
 ///     .unwrap();
 /// // (ImageData, Vec<u8>)
-/// let (img_data, img_bytes) = download_resource_to_file(img_repo.images[0]).await.unwrap();
+/// let (img_data, img_bytes) = localstorage::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
+/// # }
 /// ```
 pub async fn download_resource_to_file<T, V>(downloadable: T) -> Result<(V, PathBuf)>
 where
