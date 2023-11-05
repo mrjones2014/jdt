@@ -4,11 +4,11 @@ pub mod types;
 use error::Error;
 use error::Result;
 use reqwest::StatusCode;
-use std::fs;
-use std::fs::File;
-use std::io::Read;
-use std::io::Write;
 use std::path::PathBuf;
+use tokio::fs;
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
 use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
@@ -52,7 +52,7 @@ pub fn storage_root(storage_type: StorageType) -> Result<PathBuf> {
 }
 
 /// Store the given resource.
-pub fn store_resource<T>(resource: &T, bytes: &[u8], overwrite: bool) -> Result<PathBuf>
+pub async fn store_resource<T>(resource: &T, bytes: &[u8], overwrite: bool) -> Result<PathBuf>
 where
     T: TryIntoStoragePath,
 {
@@ -65,15 +65,16 @@ where
     let mut file = fs::OpenOptions::new()
         .write(true)
         .truncate(true)
-        .open(&path)?;
-    file.write_all(bytes)?;
-    file.flush()?;
+        .open(&path)
+        .await?;
+    file.write_all(bytes).await?;
+    file.flush().await?;
     Ok(path)
 }
 
 /// Load the resource if it exists locally. Does not connect to the internet to download
 /// the resource.
-pub fn local_load_resource<T>(resource: T) -> Result<Vec<u8>>
+pub async fn local_load_resource<T>(resource: T) -> Result<Vec<u8>>
 where
     T: TryIntoStoragePath,
 {
@@ -81,9 +82,9 @@ where
     if !path.exists() {
         return Err(Error::FileNotFound(path));
     }
-    let mut file = File::open(path)?;
+    let mut file = File::open(path).await?;
     let mut file_bytes = vec![];
-    file.read_to_end(&mut file_bytes)?;
+    file.read_to_end(&mut file_bytes).await?;
     Ok(file_bytes)
 }
 
@@ -109,12 +110,12 @@ where
     T: DownloadableResource<V>,
 {
     let (resource, bytes) = downloadable.download_resource().await?;
-    let path = store_resource(&resource, bytes.as_slice(), true)?;
+    let path = store_resource(&resource, bytes.as_slice(), true).await?;
     Ok((resource, path))
 }
 
-pub fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Result<bool> {
-    let metadata = fs::metadata(path)?;
+pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Result<bool> {
+    let metadata = fs::metadata(path).await?;
     let modified_time = metadata.modified()?;
     let elapsed = modified_time
         .elapsed()
