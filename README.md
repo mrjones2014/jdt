@@ -11,6 +11,7 @@ A repository is a JSON files that looks like the following (png and jpg images a
 {
     "name": "Repo Name",
     "description": "Repo description (optional)",
+    "updateUrl": "URL to update this JSON file from (optional)",
     "images": [
         {
             "url": "https://url/to/the/image.png",
