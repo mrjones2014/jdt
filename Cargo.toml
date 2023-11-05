@@ -1,2 +1,2 @@
 [workspace]
-members = ["./image-repo", "./repogen", "./localstorage", "./crypto"]
+members = ["./image-repo", "./repogen", "./localstorage", "./encoding"]

@@ -15,7 +15,7 @@ reqwest = { version = "0.11", features = ["json"] }
 url = { version = "2", features = ["serde"] }
 image = { version = "0.24", optional = true }
 imghdr = { version = "0.7", optional = true }
-crypto = { path = "../crypto" }
+encoding = { path = "../encoding" }
 
 
 [dev-dependencies]

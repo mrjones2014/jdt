@@ -22,6 +22,7 @@ impl std::fmt::Display for SupportedFormat {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ImageData {
     pub url: Url,
     pub hash: String,
@@ -62,7 +63,7 @@ impl ImageData {
     /// verify that it matches the [`ImageData::hash`] property stored
     /// in this [`ImageData`].
     pub fn verify_checksum(&self, img_bytes: &[u8]) -> Result<(), ChecksumError> {
-        let hash = crypto::checksum_string(img_bytes);
+        let hash = encoding::checksum_string(img_bytes);
         if hash == self.hash {
             Ok(())
         } else {
@@ -79,17 +80,20 @@ impl ImageData {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ImageRepo {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub update_url: Option<Url>,
     pub images: Vec<ImageData>,
 }
 
 impl ImageRepo {
     pub fn to_file_name(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self)
-            .map(|json| crypto::checksum_string(json.as_bytes()))
+            .map(|json| encoding::checksum_string(json.as_bytes()))
             .map(|hash| format!("{hash}.json"))
     }
 }
@@ -167,7 +171,7 @@ impl TryFrom<(Url, &[u8])> for ImageData {
         )
         .decode()?;
         let (width, height) = img_reader.dimensions();
-        let hash = crypto::checksum_string(img_bytes);
+        let hash = encoding::checksum_string(img_bytes);
 
         Ok(ImageData {
             url,

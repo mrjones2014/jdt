@@ -195,14 +195,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
 
 [[package]]
-name = "crypto"
-version = "0.1.0"
-dependencies = [
- "data-encoding",
- "ring",
-]
-
-[[package]]
 name = "data-encoding"
 version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -234,6 +226,14 @@ name = "either"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
+
+[[package]]
+name = "encoding"
+version = "0.1.0"
+dependencies = [
+ "data-encoding",
+ "ring",
+]
 
 [[package]]
 name = "encoding_rs"
@@ -565,7 +565,7 @@ dependencies = [
 name = "image-repo"
 version = "0.1.0"
 dependencies = [
- "crypto",
+ "encoding",
  "image",
  "imghdr",
  "reqwest",
