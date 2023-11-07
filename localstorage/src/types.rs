@@ -8,6 +8,7 @@ use image_repo::types::{ImageData, ImageRepo};
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, time::Duration};
+use typeshare::typeshare;
 
 const ONE_DAY: u64 = 86_400;
 const ONE_WEEK: u64 = 604_800;
@@ -71,6 +72,8 @@ impl DownloadableResource<ImageData> for ImageData {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase", tag = "type", content = "content")]
+#[typeshare]
 pub enum UpdateInterval {
     Days(u8),
     Weeks(u8),

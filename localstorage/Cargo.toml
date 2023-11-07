@@ -14,3 +14,4 @@ reqwest = { version = "0.11", features = ["json", "blocking"] }
 async-trait = "0.1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "fs"] }
 tokio-stream = { version = "0.1", features = ["fs"] }
+typeshare = "1"

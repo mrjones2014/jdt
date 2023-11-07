@@ -16,6 +16,7 @@ url = { version = "2", features = ["serde"] }
 image = { version = "0.24", optional = true }
 imghdr = { version = "0.7", optional = true }
 encoding = { path = "../encoding" }
+typeshare = "1"
 
 
 [dev-dependencies]

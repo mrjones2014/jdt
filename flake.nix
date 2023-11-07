@@ -34,6 +34,7 @@
             libiconv
             nodejs_20
             nodePackages_latest.pnpm
+            typeshare
           ] ++ lib.lists.optionals
           (system != "x86_64-darwin" && system != "aarch64-darwin")
           [ webkitgtk ];
