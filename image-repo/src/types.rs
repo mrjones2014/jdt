@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use typeshare::typeshare;
@@ -91,6 +93,8 @@ pub struct ImageRepo {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub update_url: Option<Url>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<PathBuf>,
     pub images: Vec<ImageData>,
 }
 

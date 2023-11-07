@@ -134,10 +134,12 @@ pub async fn list_repositories() -> Result<Vec<ImageRepo>> {
     let mut repos = vec![];
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
-        let mut file = File::open(file?.path()).await?;
+        let path = file?.path();
+        let mut file = File::open(&path).await?;
         let mut file_bytes = vec![];
         file.read_to_end(&mut file_bytes).await?;
-        let repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
+        let mut repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
+        repo.path = Some(path);
         repos.push(repo);
     }
 

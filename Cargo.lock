@@ -1590,6 +1590,8 @@ dependencies = [
 name = "jdt"
 version = "0.0.0"
 dependencies = [
+ "image-repo",
+ "localstorage",
  "serde",
  "serde_json",
  "tauri",
