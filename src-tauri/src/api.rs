@@ -1,5 +1,4 @@
-use image_repo::types::ImageRepo;
-use localstorage::error::Error;
+use viewmodel_api::{error::Error, viewmodels::RepositoryViewModel};
 
 trait TauriResult<T> {
     fn serialize_err(self) -> Result<T, String>;
@@ -12,6 +11,6 @@ impl<T> TauriResult<T> for Result<T, Error> {
 }
 
 #[tauri::command]
-pub async fn get_repositories_viewmodel() -> Result<Vec<ImageRepo>, String> {
-    localstorage::list_repositories().await.serialize_err()
+pub async fn get_repositories_viewmodel() -> Result<Vec<RepositoryViewModel>, String> {
+    viewmodel_api::list_repositories().await.serialize_err()
 }

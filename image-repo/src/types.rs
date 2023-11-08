@@ -1,12 +1,8 @@
-use std::path::PathBuf;
-
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
-use typeshare::typeshare;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
-#[typeshare]
 pub enum SupportedFormat {
     Jpg,
     Png,
@@ -27,7 +23,6 @@ impl std::fmt::Display for SupportedFormat {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
-#[typeshare]
 pub struct ImageData {
     pub url: Url,
     pub hash: String,
@@ -86,15 +81,12 @@ impl ImageData {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-#[typeshare]
 pub struct ImageRepo {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub update_url: Option<Url>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub path: Option<PathBuf>,
     pub images: Vec<ImageData>,
 }
 

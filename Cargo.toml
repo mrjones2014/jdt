@@ -2,7 +2,7 @@
 members = [
   "./image-repo",
   "./repogen",
-  "./localstorage",
+  "./viewmodel-api",
   "./encoding",
   "./src-tauri",
 ]

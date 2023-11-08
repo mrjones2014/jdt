@@ -1484,7 +1484,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "typeshare",
  "url",
 ]
 
@@ -1590,13 +1589,11 @@ dependencies = [
 name = "jdt"
 version = "0.0.0"
 dependencies = [
- "image-repo",
- "localstorage",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
- "typeshare",
+ "viewmodel-api",
 ]
 
 [[package]]
@@ -1717,21 +1714,6 @@ name = "linux-raw-sys"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da2479e8c062e40bf0066ffa0bc823de0a9368974af99c9f6df941d2c231e03f"
-
-[[package]]
-name = "localstorage"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "dirs-next",
- "image-repo",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
- "tokio-stream",
- "typeshare",
-]
 
 [[package]]
 name = "lock_api"
@@ -3827,6 +3809,22 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "viewmodel-api"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "dirs-next",
+ "image-repo",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-stream",
+ "typeshare",
+]
 
 [[package]]
 name = "vswhom"

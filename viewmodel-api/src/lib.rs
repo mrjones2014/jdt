@@ -1,5 +1,6 @@
 pub mod error;
 pub mod types;
+pub mod viewmodels;
 
 use error::Error;
 use error::Result;
@@ -15,6 +16,7 @@ use tokio_stream::StreamExt;
 use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
+use viewmodels::RepositoryViewModel;
 
 #[cfg(debug_assertions)]
 const STORAGE_ROOT: &str = "jdt-debug";
@@ -100,11 +102,11 @@ where
 /// # async fn test() {
 /// # use reqwest::Url;
 /// // (ImageRepo, Vec<u8>)
-/// let (img_repo, json_bytes) = localstorage::download_resource_to_file(Url::parse("").unwrap())
+/// let (img_repo, json_bytes) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap())
 ///     .await
 ///     .unwrap();
 /// // (ImageData, Vec<u8>)
-/// let (img_data, img_bytes) = localstorage::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
+/// let (img_data, img_bytes) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
 /// # }
 /// ```
 pub async fn download_resource_to_file<T, V>(downloadable: T) -> Result<(V, PathBuf)>
@@ -129,18 +131,14 @@ pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Re
 }
 
 /// List all insatlled image repositories.
-pub async fn list_repositories() -> Result<Vec<ImageRepo>> {
+pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
     let storage_root = storage_root(StorageType::Repo)?;
     let mut repos = vec![];
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
         let path = file?.path();
-        let mut file = File::open(&path).await?;
-        let mut file_bytes = vec![];
-        file.read_to_end(&mut file_bytes).await?;
-        let mut repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
-        repo.path = Some(path);
-        repos.push(repo);
+        let view = RepositoryViewModel::new(path).await?;
+        repos.push(view);
     }
 
     Ok(repos)
