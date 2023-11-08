@@ -205,6 +205,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "decoding")]
     fn decodes_from_btye_vec() {
         let img_bytes = include_bytes!("../ferris.png").to_vec();
         let url = Url::parse("https://rustacean.net/assets/rustacean-flat-noshadow.png").unwrap();

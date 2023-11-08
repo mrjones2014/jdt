@@ -4,7 +4,6 @@ pub mod viewmodels;
 
 use error::Error;
 use error::Result;
-use image_repo::types::ImageRepo;
 use reqwest::StatusCode;
 use std::path::PathBuf;
 use tokio::fs;
