@@ -28,20 +28,6 @@ pub enum StorageType {
     Image,
 }
 
-/// Download a resource from the internet and return the response body bytes.
-pub(crate) async fn download_bytes<T>(url: T) -> Result<Vec<u8>>
-where
-    T: AsRef<str>,
-{
-    let url = url.as_ref();
-    let http_resp = reqwest::get(url).await?;
-    let status = http_resp.status();
-    if status != StatusCode::OK {
-        return Err(Error::HttpStatus(status));
-    }
-    Ok(http_resp.bytes().await?.to_vec())
-}
-
 /// Get the toplevel storage root directory for the given storage type.
 pub fn storage_root(storage_type: StorageType) -> Result<PathBuf> {
     match storage_type {

@@ -1,17 +1,30 @@
 use crate::{
-    download_bytes,
     error::{Error, Result},
     storage_root, StorageType,
 };
 use async_trait::async_trait;
 use image_repo::types::{ImageData, ImageRepo};
-use reqwest::Url;
+use reqwest::{StatusCode, Url};
 use serde::{Deserialize, Serialize};
 use std::{path::PathBuf, time::Duration};
 use typeshare::typeshare;
 
 const ONE_DAY: u64 = 86_400;
 const ONE_WEEK: u64 = 604_800;
+
+/// Download a resource from the internet and return the response body bytes.
+async fn download_bytes<T>(url: T) -> Result<Vec<u8>>
+where
+    T: AsRef<str>,
+{
+    let url = url.as_ref();
+    let http_resp = reqwest::get(url).await?;
+    let status = http_resp.status();
+    if status != StatusCode::OK {
+        return Err(Error::HttpStatus(status));
+    }
+    Ok(http_resp.bytes().await?.to_vec())
+}
 
 /// Trait to allow getting a full filepath from
 /// something that should be stored to disk.
