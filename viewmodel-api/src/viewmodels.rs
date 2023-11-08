@@ -22,16 +22,34 @@ pub struct RepositoryViewModel {
     pub path: PathBuf,
 }
 
+async fn metadata_last_updated(file: &File) -> Result<String> {
+    let last_updated: DateTime<Utc> = file.metadata().await?.modified()?.into();
+    Ok(last_updated.to_rfc3339())
+}
+
+async fn file_bytes(path: &PathBuf) -> Result<(File, Vec<u8>)> {
+    let mut file = File::open(&path).await?;
+    let mut file_bytes = vec![];
+    file.read_to_end(&mut file_bytes).await?;
+    Ok((file, file_bytes))
+}
+
 impl RepositoryViewModel {
-    pub async fn new(path: PathBuf) -> Result<RepositoryViewModel> {
-        let mut file = File::open(&path).await?;
-        let mut file_bytes = vec![];
-        file.read_to_end(&mut file_bytes).await?;
+    pub async fn from_path(path: PathBuf) -> Result<RepositoryViewModel> {
+        let (file, file_bytes) = file_bytes(&path).await?;
         let repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
-        let last_updated: DateTime<Utc> = file.metadata().await?.modified()?.into();
-        let last_updated = last_updated.to_rfc3339();
         Ok(Self {
-            last_updated,
+            last_updated: metadata_last_updated(&file).await?,
+            name: repo.name,
+            update_url: repo.update_url.map(|url| url.to_string()),
+            path,
+        })
+    }
+
+    pub async fn from_resource(repo: ImageRepo, path: PathBuf) -> Result<RepositoryViewModel> {
+        let (file, _) = file_bytes(&path).await?;
+        Ok(Self {
+            last_updated: metadata_last_updated(&file).await?,
             name: repo.name,
             update_url: repo.update_url.map(|url| url.to_string()),
             path,

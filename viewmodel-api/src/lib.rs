@@ -86,12 +86,12 @@ where
 /// ```no_run
 /// # async fn test() {
 /// # use reqwest::Url;
-/// // (ImageRepo, Vec<u8>)
-/// let (img_repo, json_bytes) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap())
+/// // (ImageRepo, PathBuf)
+/// let (img_repo, json_file_path) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap())
 ///     .await
 ///     .unwrap();
-/// // (ImageData, Vec<u8>)
-/// let (img_data, img_bytes) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
+/// // (ImageData, PathBuf)
+/// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
 /// # }
 /// ```
 pub async fn download_resource_to_file<T, V>(downloadable: T) -> Result<(V, PathBuf)>
@@ -122,7 +122,7 @@ pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
         let path = file?.path();
-        let view = RepositoryViewModel::new(path).await?;
+        let view = RepositoryViewModel::from_path(path).await?;
         repos.push(view);
     }
 

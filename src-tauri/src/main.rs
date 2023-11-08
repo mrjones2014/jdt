@@ -5,7 +5,7 @@ mod api;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![api::get_repositories_viewmodel])
+        .invoke_handler(tauri::generate_handler![api::get_repositories_viewmodel, api::add_repository])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
