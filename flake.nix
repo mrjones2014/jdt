@@ -35,6 +35,7 @@
             nodejs_20
             nodePackages_latest.pnpm
             typeshare
+            cargo-tauri
           ] ++ lib.lists.optionals
           (system != "x86_64-darwin" && system != "aarch64-darwin")
           [ webkitgtk ];

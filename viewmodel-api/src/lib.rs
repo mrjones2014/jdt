@@ -4,8 +4,9 @@ pub mod viewmodels;
 
 use error::Error;
 use error::Result;
-use reqwest::StatusCode;
 use std::path::PathBuf;
+use strum::EnumIter;
+use strum::IntoEnumIterator;
 use tokio::fs;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
@@ -22,7 +23,7 @@ const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
 
-#[derive(Debug)]
+#[derive(Debug, EnumIter)]
 pub enum StorageType {
     Repo,
     Image,
@@ -39,6 +40,17 @@ pub fn storage_root(storage_type: StorageType) -> Result<PathBuf> {
         }
     }
     .ok_or(Error::FailedToGetStorageDir)
+}
+
+pub async fn init_storage() -> Result<()> {
+    for root in StorageType::iter() {
+        let root = storage_root(root)?;
+        if !root.exists() {
+            fs::create_dir_all(root).await?;
+        }
+    }
+
+    Ok(())
 }
 
 /// Store the given resource.
@@ -122,6 +134,7 @@ pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
         let path = file?.path();
+        println!("{}", path.to_string_lossy());
         let view = RepositoryViewModel::from_path(path).await?;
         repos.push(view);
     }

@@ -17,7 +17,7 @@ pub enum Error {
     /// Downloaded image does not match the checksum from the repository JSON
     InvalidChecksum(ChecksumError),
     /// Failed to decode image bytes
-    FailedToDecodeImageBytes(std::io::Error),
+    IOError(std::io::Error),
     /// Failed to decode JSON string from bytes
     FailedToDecodeUtf8(FromUtf8Error),
     /// File already exists and you specified `overwrite = false`
@@ -43,7 +43,7 @@ impl Display for Error {
                 Error::Http(e) => format!("HTTP failed: {e}"),
                 Error::HttpStatus(code) => format!("Bad HTTP status code: {code}"),
                 Error::InvalidChecksum(e) => format!("{e}"),
-                Error::FailedToDecodeImageBytes(e) => format!("Failed to decode image bytes: {e}"),
+                Error::IOError(e) => format!("Failed to decode image bytes: {e}"),
                 Error::FailedToDecodeUtf8(e) => format!("Failed to decode UTF-8: {e}"),
                 Error::FileAlreadyExists(path) =>
                     format!("File already exists: {}", path.to_string_lossy()),
@@ -78,7 +78,7 @@ impl From<reqwest::Error> for Error {
 
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
-        Self::FailedToDecodeImageBytes(value)
+        Self::IOError(value)
     }
 }
 

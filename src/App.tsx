@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "./api";
 import "./App.css";
-import { ImageRepo } from "./types";
+import { RepositoryViewModel } from "./types";
 
 function App() {
-  const [repos, setRepos] = useState<ImageRepo[]>();
+  const [repos, setRepos] = useState<RepositoryViewModel[]>();
   useEffect(() => {
-    // TODO this API sucks. Figure out a way to make invocations typesafe.
-    invoke("get_repositories_viewmodel").then((repos) => {
-      setRepos(repos as ImageRepo[]);
+    invoke("get_repositories_view_model").then((repos) => {
+      console.log("bruh?");
+      setRepos(repos);
     });
-  });
+  }, []);
 
   return JSON.stringify(repos, undefined, 2);
 }
