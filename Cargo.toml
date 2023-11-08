@@ -1,8 +1,3 @@
 [workspace]
-members = [
-  "./image-repo",
-  "./repogen",
-  "./viewmodel-api",
-  "./encoding",
-  "./src-tauri",
-]
+members = ["./image-repo", "./repogen", "./viewmodel-api", "./encoding"]
+exclude = ["./src-tauri"]
