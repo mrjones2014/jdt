@@ -14,10 +14,10 @@ function formatUrl(url: string): string {
 function App() {
   const [repos, setRepos] = useState<RepositoryViewModel[]>();
   useEffect(() => {
-    invoke("get_repositories_view_model")
-      .then((repos) => {
-        console.log("bruh?");
-        setRepos(repos);
+    invoke({ type: "GetRepositories" })
+      .then((response) => {
+        if (response.type !== "GetRepositories") return;
+        setRepos(response.content);
       })
       .catch(() => {
         // TODO error toasts
@@ -28,9 +28,9 @@ function App() {
 
   const onRepoAdded = () => {
     setShowAddModal(false);
-    invoke("get_repositories_view_model").then((repos) => {
-      console.log("bruh?");
-      setRepos(repos);
+    invoke({ type: "GetRepositories" }).then((response) => {
+      if (response.type !== "GetRepositories") return;
+      setRepos(response.content);
     });
   };
 

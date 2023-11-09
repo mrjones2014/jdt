@@ -24,7 +24,7 @@ export default function AddRepoModal({
 
   const onConfirm = () => {
     setLoading(true);
-    invoke("add_repository", { url })
+    invoke({ type: "AddRepository", content: url })
       .then(onConfirmComplete)
       .catch(() => {
         // TODO error toasts

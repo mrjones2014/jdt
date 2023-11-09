@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+use typeshare::typeshare;
 use url::Url;
 use viewmodel_api::{error::Error, viewmodels::RepositoryViewModel};
 
@@ -11,17 +13,37 @@ impl<T> TauriResult<T> for Result<T, Error> {
     }
 }
 
-#[tauri::command]
-pub async fn get_repositories_view_model() -> Result<Vec<RepositoryViewModel>, String> {
-    viewmodel_api::list_repositories().await.serialize_err()
+#[typeshare]
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type", content = "content")]
+pub enum CommandRequest {
+    GetRepositories,
+    AddRepository(Url),
+}
+
+#[typeshare]
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type", content = "content")]
+pub enum CommandResponse {
+    GetRepositories(Vec<RepositoryViewModel>),
+    AddRepository(RepositoryViewModel),
 }
 
 #[tauri::command]
-pub async fn add_repository(url: Url) -> Result<RepositoryViewModel, String> {
-    let (repo, file_path) = viewmodel_api::download_resource_to_file(url)
-        .await
-        .serialize_err()?;
-    RepositoryViewModel::from_resource(repo, file_path)
-        .await
-        .serialize_err()
+pub async fn invoke(request: CommandRequest) -> Result<CommandResponse, String> {
+    match request {
+        CommandRequest::GetRepositories => viewmodel_api::list_repositories()
+            .await
+            .serialize_err()
+            .map(CommandResponse::GetRepositories),
+        CommandRequest::AddRepository(url) => {
+            let (repo, file_path) = viewmodel_api::download_resource_to_file(url)
+                .await
+                .serialize_err()?;
+            RepositoryViewModel::from_resource(repo, file_path)
+                .await
+                .serialize_err()
+                .map(CommandResponse::AddRepository)
+        }
+    }
 }

@@ -1470,6 +1470,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tokio",
+ "typeshare",
  "url",
  "viewmodel-api",
 ]
