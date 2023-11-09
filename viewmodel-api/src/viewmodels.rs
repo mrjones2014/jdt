@@ -6,8 +6,7 @@ use image_repo::types::ImageRepo;
 use serde::{Deserialize, Serialize};
 use tokio::{fs::File, io::AsyncReadExt};
 
-#[specta::Type]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryViewModel {
     /// Timestamp formatted as an ISO 8601 timestamp. Should be able to parse for formatting

@@ -1,6 +1,11 @@
 [workspace]
-members = ["./image-repo", "./repogen", "./viewmodel-api", "./encoding"]
-exclude = ["./src-tauri"]
+members = [
+  "./image-repo",
+  "./repogen",
+  "./viewmodel-api",
+  "./encoding",
+  "./src-tauri",
+]
 
 [workspace.dependencies]
 reqwest = { version = "0.11", features = ["json", "blocking"] }

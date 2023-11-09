@@ -16,3 +16,4 @@ tokio = { workspace = true }
 tokio-stream = { workspace = true }
 chrono = "0.4"
 strum = { version = "0.25", features = ["derive"] }
+specta = { workspace = true }

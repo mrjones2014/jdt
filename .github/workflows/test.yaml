@@ -37,4 +37,5 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Generate test result and coverage report
         run: |
+          sudo apt-get install libgtk-3-dev # tauri dependency
           make test
