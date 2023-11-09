@@ -5,12 +5,11 @@ mod api;
 
 #[tokio::main]
 async fn main() {
-    viewmodel_api::init_storage().await.expect("Failed to initialize storage directories.");
+    viewmodel_api::init_storage()
+        .await
+        .expect("Failed to initialize storage directories.");
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![
-            api::get_repositories_view_model,
-            api::add_repository
-        ])
+        .invoke_handler(tauri::generate_handler![api::invoke])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
