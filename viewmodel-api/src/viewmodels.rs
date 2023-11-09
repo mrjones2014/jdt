@@ -5,9 +5,8 @@ use chrono::{DateTime, Utc};
 use image_repo::types::ImageRepo;
 use serde::{Deserialize, Serialize};
 use tokio::{fs::File, io::AsyncReadExt};
-use typeshare::typeshare;
 
-#[typeshare]
+#[specta::Type]
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryViewModel {

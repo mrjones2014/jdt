@@ -25,6 +25,3 @@ target
 *.sln
 *.sw?
 .direnv
-
-# typeshare
-src/types.ts

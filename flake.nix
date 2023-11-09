@@ -34,7 +34,6 @@
             libiconv
             nodejs_20
             nodePackages_latest.pnpm
-            typeshare
             cargo-tauri
             tailwindcss-language-server
           ] ++ lib.lists.optionals

@@ -12,11 +12,13 @@ impl<T> TauriResult<T> for Result<T, Error> {
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn get_repositories_view_model() -> Result<Vec<RepositoryViewModel>, String> {
     viewmodel_api::list_repositories().await.serialize_err()
 }
 
 #[tauri::command]
+#[specta::specta]
 pub async fn add_repository(url: Url) -> Result<RepositoryViewModel, String> {
     let (repo, file_path) = viewmodel_api::download_resource_to_file(url)
         .await
