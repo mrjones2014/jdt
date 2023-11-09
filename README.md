@@ -3,6 +3,19 @@
 WIP app to automatically cycle your desktop wallpaper through images from a hand-picked repository
 of images from the James Webb Space Telescope.
 
+## Development Environment
+
+If you are a Nix user, you can simply run `nix develop` to set up your environment. If you use `direnv` with Nix,
+you can just run `direnv allow`.
+
+If you don't use Nix, you'll need to:
+
+- Install Rust toolchain (from [rustup.rs](https://rustup.rs) or whatever your preferred method is)
+- Install `tauri-cli` by running `cargo install tauri-cli`
+- Install `node` and `pnpm` via your preferred method
+
+With that set up, to run the app, you can build and run the app via `make run`.
+
 ## Generating an Image Repository
 
 A repository is a JSON files that looks like the following (png and jpg images are supported):
