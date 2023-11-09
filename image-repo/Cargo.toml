@@ -9,13 +9,13 @@ edition = "2021"
 decoding = ["dep:image", "dep:imghdr"]
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-reqwest = { version = "0.11", features = ["json"] }
-url = { version = "2", features = ["serde"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+url = { workspace = true }
 image = { version = "0.24", optional = true }
 imghdr = { version = "0.7", optional = true }
 encoding = { path = "../encoding" }
 
 [dev-dependencies]
-tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tokio = { workspace = true }
