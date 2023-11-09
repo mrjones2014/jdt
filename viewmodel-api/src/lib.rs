@@ -65,6 +65,7 @@ where
 
     let path = resource.try_into_storage_path()?;
     let mut file = fs::OpenOptions::new()
+        .create(true)
         .write(true)
         .truncate(true)
         .open(&path)
