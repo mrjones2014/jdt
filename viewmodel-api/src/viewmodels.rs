@@ -16,6 +16,8 @@ pub struct RepositoryViewModel {
     pub last_updated: String,
     /// Repo name
     pub name: String,
+    /// Description
+    pub description: Option<String>,
     /// Repo JSON file update URL
     pub update_url: Option<String>,
     /// Local disk path of repo JSON file
@@ -41,6 +43,7 @@ impl RepositoryViewModel {
         Ok(Self {
             last_updated: metadata_last_updated(&file).await?,
             name: repo.name,
+            description: repo.description,
             update_url: repo.update_url.map(|url| url.to_string()),
             path,
         })
@@ -51,6 +54,7 @@ impl RepositoryViewModel {
         Ok(Self {
             last_updated: metadata_last_updated(&file).await?,
             name: repo.name,
+            description: repo.description,
             update_url: repo.update_url.map(|url| url.to_string()),
             path,
         })
