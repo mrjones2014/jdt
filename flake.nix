@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "nixpkgs";
+    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -36,6 +36,7 @@
             nodePackages_latest.pnpm
             typeshare
             cargo-tauri
+            tailwindcss-language-server
           ] ++ lib.lists.optionals
           (system != "x86_64-darwin" && system != "aarch64-darwin")
           [ webkitgtk ];
