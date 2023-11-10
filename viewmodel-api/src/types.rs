@@ -1,6 +1,6 @@
 use crate::{
     error::{Error, Result},
-    storage_root, StorageType,
+    storage_root, ResourceType,
 };
 use async_trait::async_trait;
 use image_repo::types::{ImageData, ImageRepo};
@@ -36,13 +36,13 @@ pub trait TryIntoStoragePath {
 impl TryIntoStoragePath for ImageRepo {
     fn try_into_storage_path(&self) -> Result<PathBuf> {
         let file_name = self.to_file_name();
-        storage_root(StorageType::Repo).map(|root| root.join(file_name))
+        storage_root(ResourceType::Repo).map(|root| root.join(file_name))
     }
 }
 
 impl TryIntoStoragePath for ImageData {
     fn try_into_storage_path(&self) -> Result<PathBuf> {
-        storage_root(StorageType::Image).map(|root| root.join(self.to_file_name()))
+        storage_root(ResourceType::Image).map(|root| root.join(self.to_file_name()))
     }
 }
 

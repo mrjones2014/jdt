@@ -12,6 +12,14 @@ type Invocations = {
 		args: { url: string };
 		returns: RepositoryViewModel;
 	};
+	delete_resource: {
+		args: { path: string };
+		returns: void;
+	};
+	update_repo: {
+		args: { repo: RepositoryViewModel };
+		returns: void;
+	};
 };
 
 export function invoke<T extends keyof Invocations>(

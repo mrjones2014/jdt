@@ -24,18 +24,18 @@ const STORAGE_ROOT: &str = "jdt-debug";
 const STORAGE_ROOT: &str = "jdt";
 
 #[derive(Debug, EnumIter)]
-pub enum StorageType {
+pub enum ResourceType {
     Repo,
     Image,
 }
 
 /// Get the toplevel storage root directory for the given storage type.
-pub fn storage_root(storage_type: StorageType) -> Result<PathBuf> {
-    match storage_type {
-        StorageType::Repo => {
+pub fn storage_root(resource_type: ResourceType) -> Result<PathBuf> {
+    match resource_type {
+        ResourceType::Repo => {
             dirs_next::config_dir().map(|config| config.join(STORAGE_ROOT).join("repositories"))
         }
-        StorageType::Image => {
+        ResourceType::Image => {
             dirs_next::cache_dir().map(|cache| cache.join(STORAGE_ROOT).join("images"))
         }
     }
@@ -43,7 +43,7 @@ pub fn storage_root(storage_type: StorageType) -> Result<PathBuf> {
 }
 
 pub async fn init_storage() -> Result<()> {
-    for root in StorageType::iter() {
+    for root in ResourceType::iter() {
         let root = storage_root(root)?;
         if !root.exists() {
             fs::create_dir_all(root).await?;
@@ -100,20 +100,23 @@ where
 /// # async fn test() {
 /// # use reqwest::Url;
 /// // (ImageRepo, PathBuf)
-/// let (img_repo, json_file_path) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap())
+/// let (img_repo, json_file_path) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap(), true /* overwrite? */)
 ///     .await
 ///     .unwrap();
 /// // (ImageData, PathBuf)
-/// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
+/// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone(), false /* overwrite? */).await.unwrap();
 /// # }
 /// ```
-pub async fn download_resource_to_file<T, V>(downloadable: T) -> Result<(V, PathBuf)>
+pub async fn download_resource_to_file<T, V>(
+    downloadable: T,
+    overwrite: bool,
+) -> Result<(V, PathBuf)>
 where
     V: TryIntoStoragePath,
     T: DownloadableResource<V>,
 {
     let (resource, bytes) = downloadable.download_resource().await?;
-    let path = store_resource(&resource, bytes.as_slice(), true).await?;
+    let path = store_resource(&resource, bytes.as_slice(), overwrite).await?;
     Ok((resource, path))
 }
 
@@ -130,12 +133,11 @@ pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Re
 
 /// List all insatlled image repositories.
 pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
-    let storage_root = storage_root(StorageType::Repo)?;
+    let storage_root = storage_root(ResourceType::Repo)?;
     let mut repos = vec![];
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
         let path = file?.path();
-        println!("{}", path.to_string_lossy());
         let view = RepositoryViewModel::from_path(path).await?;
         repos.push(view);
     }

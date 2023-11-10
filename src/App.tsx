@@ -2,36 +2,53 @@ import { useEffect, useState } from "react";
 import { invoke } from "./api";
 import { RepositoryViewModel } from "./types";
 import AddRepoModal from "./components/AddRepoModal/AddRepoModal";
+import { ArrowPathIcon, TrashIcon } from "@heroicons/react/20/solid";
 
 function formatUrl(url: string): string {
-  let formatted = url.substring(17);
-  if (formatted.length < url.length) {
-    formatted = `${formatted}…`;
-  }
-  return formatted;
+  const urlParsed = new URL(url);
+  return `${urlParsed.hostname}/...`;
 }
 
 function App() {
   const [repos, setRepos] = useState<RepositoryViewModel[]>();
-  useEffect(() => {
+
+  const refresh = () =>
     invoke("get_repositories_view_model")
       .then((repos) => {
-        console.log("bruh?");
         setRepos(repos);
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         // TODO error toasts
       });
+
+  useEffect(() => {
+    refresh();
   }, []);
 
   const [showAddModal, setShowAddModal] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
 
   const onRepoAdded = () => {
     setShowAddModal(false);
-    invoke("get_repositories_view_model").then((repos) => {
-      console.log("bruh?");
-      setRepos(repos);
-    });
+    refresh();
+  };
+
+  const updateRepo = (repo: RepositoryViewModel) => {
+    invoke("update_repo", { repo }).then(refresh).catch(console.error); // TODO error toast
+  };
+
+  const deleteRepo = (repo: RepositoryViewModel) => {
+    if (!deletePending) {
+      setDeletePending(true);
+      setTimeout(() => {
+        setDeletePending(false);
+      }, 3000);
+      return;
+    }
+    invoke("delete_resource", { path: repo.path })
+      .then(refresh)
+      .catch(console.error); // TODO error toasts
   };
 
   return (
@@ -47,20 +64,20 @@ function App() {
           Add Image Repository
         </button>
       </div>
-      <div className="flex w-full overflow-x-auto">
-        <table className="table zebra-table">
+      <div className="flex w-full">
+        <table className="table zebra-table table-hover table-compact">
           <thead>
             <tr>
               <th>Name</th>
               <th>Description</th>
-              <th>Path</th>
               <th>Update URL</th>
               <th>Last Updated</th>
-              <th>Actions</th>
+              <th className="w-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {(repos &&
+              repos.length > 0 &&
               repos.map((repo) => (
                 <tr>
                   <td>{repo.name}</td>
@@ -71,13 +88,37 @@ function App() {
                         className="tooltip tooltip-top"
                         data-tooltip={repo.updateUrl}
                       >
-                        {formatUrl(repo.updateUrl)}
+                        <a
+                          className="link"
+                          href={repo.updateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {formatUrl(repo.updateUrl)}
+                        </a>
                       </span>
                     )) ||
                       "None"}
                   </td>
                   <td>{repo.lastUpdated}</td>
-                  <td>todo</td>
+                  <td className="flex justify-end w-fit">
+                    {repo.updateUrl && (
+                      <button
+                        className="btn btn-primary mr-4"
+                        onClick={() => updateRepo(repo)}
+                      >
+                        <ArrowPathIcon className="h-6 w-6 text-white" />
+                        &nbsp;&nbsp; Update
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-error w-32"
+                      onClick={() => deleteRepo(repo)}
+                    >
+                      <TrashIcon className="h-6 w-6 text-white" />{" "}
+                      {(deletePending && "Confirm?") || "Delete"}
+                    </button>
+                  </td>
                 </tr>
               ))) || (
               <tr>

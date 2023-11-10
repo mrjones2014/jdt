@@ -26,7 +26,8 @@ export default function AddRepoModal({
     setLoading(true);
     invoke("add_repository", { url })
       .then(onConfirmComplete)
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
         // TODO error toasts
         onCancel();
       });
