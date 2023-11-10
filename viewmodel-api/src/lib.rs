@@ -100,11 +100,11 @@ where
 /// # async fn test() {
 /// # use reqwest::Url;
 /// // (ImageRepo, PathBuf)
-/// let (img_repo, json_file_path) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap())
+/// let (img_repo, json_file_path) = viewmodel_api::download_resource_to_file(Url::parse("").unwrap(), true /* overwrite? */)
 ///     .await
 ///     .unwrap();
 /// // (ImageData, PathBuf)
-/// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
+/// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone(), false /* overwrite? */).await.unwrap();
 /// # }
 /// ```
 pub async fn download_resource_to_file<T, V>(
