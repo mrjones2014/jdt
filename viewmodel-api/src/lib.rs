@@ -19,6 +19,7 @@ use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
 use viewmodels::RepositoryViewModel;
+use serde::{Serialize, Deserialize};
 
 #[cfg(debug_assertions)]
 const STORAGE_ROOT: &str = "jdt-debug";
