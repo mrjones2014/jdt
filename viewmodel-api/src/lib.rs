@@ -107,13 +107,16 @@ where
 /// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone()).await.unwrap();
 /// # }
 /// ```
-pub async fn download_resource_to_file<T, V>(downloadable: T) -> Result<(V, PathBuf)>
+pub async fn download_resource_to_file<T, V>(
+    downloadable: T,
+    overwrite: bool,
+) -> Result<(V, PathBuf)>
 where
     V: TryIntoStoragePath,
     T: DownloadableResource<V>,
 {
     let (resource, bytes) = downloadable.download_resource().await?;
-    let path = store_resource(&resource, bytes.as_slice(), true).await?;
+    let path = store_resource(&resource, bytes.as_slice(), overwrite).await?;
     Ok((resource, path))
 }
 
@@ -135,7 +138,6 @@ pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
     let mut dir_stream = ReadDirStream::new(fs::read_dir(storage_root).await?);
     while let Some(file) = dir_stream.next().await {
         let path = file?.path();
-        println!("{}", path.to_string_lossy());
         let view = RepositoryViewModel::from_path(path).await?;
         repos.push(view);
     }
