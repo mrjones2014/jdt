@@ -6,4 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-more-wallpapers = "0.3.1"
+more-wallpapers = {version = "0.3.1", features = ["fallback"]}
+tauri = { version = "1.5", features = ["shell-open"] }
