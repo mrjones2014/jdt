@@ -3,7 +3,9 @@ import { invoke } from "./api";
 import { RepositoryViewModel } from "./types";
 import AddRepoModal from "./components/AddRepoModal/AddRepoModal";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/react/20/solid";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useToast } from "./hooks/useToast";
 
 function formatUrl(url: string): string {
   const urlParsed = new URL(url);
@@ -12,16 +14,14 @@ function formatUrl(url: string): string {
 
 function App() {
   const [repos, setRepos] = useState<RepositoryViewModel[]>();
+  const toast = useToast();
 
   const refresh = () =>
     invoke("get_repositories_view_model")
       .then((repos) => {
         setRepos(repos);
       })
-      .catch((e) => {
-        console.error(e);
-        // TODO error toasts
-      });
+      .catch(toast.error);
 
   useEffect(() => {
     refresh();
@@ -36,7 +36,7 @@ function App() {
   };
 
   const updateRepo = (repo: RepositoryViewModel) => {
-    invoke("update_repo", { repo }).then(refresh).catch(console.error); // TODO error toast
+    invoke("update_repo", { repo }).then(refresh).catch(toast.error);
   };
 
   const deleteRepo = (repo: RepositoryViewModel) => {
@@ -49,7 +49,7 @@ function App() {
     }
     invoke("delete_resource", { path: repo.path })
       .then(refresh)
-      .catch(console.error); // TODO error toasts
+      .catch(toast.error);
   };
 
   return (
@@ -63,12 +63,6 @@ function App() {
           onClick={() => setShowAddModal(true)}
         >
           Add Image Repository
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => toast.error("Some error message")}
-        >
-          Show Notification
         </button>
       </div>
       <div className="flex w-full">
@@ -140,7 +134,11 @@ function App() {
         onCancel={() => setShowAddModal(false)}
         onConfirmComplete={onRepoAdded}
       />
-      <ToastContainer />
+      <ToastContainer
+        theme="dark"
+        position="bottom-right"
+        closeOnClick={true}
+      />
     </div>
   );
 }

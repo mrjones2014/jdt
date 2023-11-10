@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { invoke } from "../../api";
+import { useToast } from "../../hooks/useToast";
 
 export interface AddRepoModalProps {
   show: boolean;
@@ -14,6 +15,7 @@ export default function AddRepoModal({
 }: AddRepoModalProps) {
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     if (show) return;
@@ -27,8 +29,7 @@ export default function AddRepoModal({
     invoke("add_repository", { url })
       .then(onConfirmComplete)
       .catch((e) => {
-        console.error(e);
-        // TODO error toasts
+        toast.error(e);
         onCancel();
       });
   };
