@@ -3,6 +3,7 @@ import { invoke } from "./api";
 import { RepositoryViewModel } from "./types";
 import AddRepoModal from "./components/AddRepoModal/AddRepoModal";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { ToastContainer, toast } from "react-toastify";
 
 function formatUrl(url: string): string {
   const urlParsed = new URL(url);
@@ -62,6 +63,12 @@ function App() {
           onClick={() => setShowAddModal(true)}
         >
           Add Image Repository
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={() => toast.error("Some error message")}
+        >
+          Show Notification
         </button>
       </div>
       <div className="flex w-full">
@@ -133,6 +140,7 @@ function App() {
         onCancel={() => setShowAddModal(false)}
         onConfirmComplete={onRepoAdded}
       />
+      <ToastContainer />
     </div>
   );
 }

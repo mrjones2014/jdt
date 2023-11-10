@@ -4,6 +4,8 @@ pub mod viewmodels;
 
 use error::Error;
 use error::Result;
+use serde::Deserialize;
+use serde::Serialize;
 use std::path::PathBuf;
 use strum::EnumIter;
 use strum::IntoEnumIterator;
@@ -23,7 +25,7 @@ const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
 
-#[derive(Debug, EnumIter)]
+#[derive(Debug, EnumIter, Serialize, Deserialize)]
 pub enum ResourceType {
     Repo,
     Image,
