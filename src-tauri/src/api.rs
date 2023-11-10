@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use url::Url;
-use viewmodel_api::{error::Error, viewmodels::RepositoryViewModel};
+use viewmodel_api::{error::Error, viewmodels::RepositoryViewModel, ResourceType};
 
 trait TauriResult<T> {
     fn serialize_err(self) -> Result<T, String>;
@@ -35,7 +35,12 @@ pub async fn add_repository(url: Url) -> Result<RepositoryViewModel, String> {
 }
 
 #[tauri::command]
-pub async fn delete_resource(path: PathBuf) -> Result<(), String> {
+pub async fn delete_resource(path: PathBuf, resource_type: ResourceType) -> Result<(), String> {
+    let storage_root = viewmodel_api::storage_root(resource_type)?;
+    if !path.starts_with(storage_root) {
+        return Err("Attempted to delete file that is outside application storage.".into());
+    }
+
     tokio::fs::remove_file(path).await.serialize_err()
 }
 
