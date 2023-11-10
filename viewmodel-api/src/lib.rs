@@ -17,13 +17,14 @@ use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
 use viewmodels::RepositoryViewModel;
+use serde::{Serialize, Deserialize};
 
 #[cfg(debug_assertions)]
 const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
 
-#[derive(Debug, EnumIter)]
+#[derive(Debug, EnumIter, Serialize, Deserialize)]
 pub enum ResourceType {
     Repo,
     Image,

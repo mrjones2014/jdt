@@ -36,7 +36,7 @@ pub async fn add_repository(url: Url) -> Result<RepositoryViewModel, String> {
 
 #[tauri::command]
 pub async fn delete_resource(path: PathBuf, resource_type: ResourceType) -> Result<(), String> {
-    let storage_root = viewmodel_api::storage_root(resource_type)?;
+    let storage_root = viewmodel_api::storage_root(resource_type).serialize_err()?;
     if !path.starts_with(storage_root) {
         return Err("Attempted to delete file that is outside application storage.".into());
     }
