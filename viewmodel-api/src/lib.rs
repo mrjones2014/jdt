@@ -4,6 +4,7 @@ pub mod viewmodels;
 
 use error::Error;
 use error::Result;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use strum::EnumIter;
 use strum::IntoEnumIterator;
@@ -17,7 +18,6 @@ use types::DownloadableResource;
 use types::TryIntoStoragePath;
 use types::UpdateInterval;
 use viewmodels::RepositoryViewModel;
-use serde::{Serialize, Deserialize};
 
 #[cfg(debug_assertions)]
 const STORAGE_ROOT: &str = "jdt-debug";
