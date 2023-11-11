@@ -18,8 +18,9 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+        # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \ # tauri deps
+          install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
@@ -44,8 +45,9 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add rustfmt
+        # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \ # tauri deps
+          install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
@@ -70,8 +72,9 @@ jobs:
           toolchain: stable
           components: clippy
           override: true
+        # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \ # tauri deps
+          install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \

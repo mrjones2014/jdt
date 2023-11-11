@@ -31,8 +31,9 @@ jobs:
             target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Run all tests
+        # tauri deps
         run: |
-          install libwebkit2gtk-4.0-dev \ # tauri deps
+          install libwebkit2gtk-4.0-dev \
                     build-essential \
                     curl \
                     wget \
