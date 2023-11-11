@@ -32,5 +32,5 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Run all tests
         run: |
-          libgtk-3-dev # tauri dep
+          sudo apt install libgtk-3-dev # tauri dep
           make test
