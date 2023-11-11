@@ -32,5 +32,14 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Run all tests
         run: |
-          sudo apt install libgtk-3-dev # tauri dep
+          install libwebkit2gtk-4.0-dev \ # tauri deps
+                    build-essential \
+                    curl \
+                    wget \
+                    file \
+                    libssl-dev \
+                    libgtk-3-dev \
+                    libayatana-appindicator3-dev \
+                    librsvg2-dev \
+                    libsoup2.4-dev
           make test
