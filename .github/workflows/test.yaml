@@ -33,7 +33,7 @@ jobs:
       - name: Run all tests
         # tauri deps
         run: |
-          install libwebkit2gtk-4.0-dev \
+          sudo apt install libwebkit2gtk-4.0-dev \
                     build-essential \
                     curl \
                     wget \

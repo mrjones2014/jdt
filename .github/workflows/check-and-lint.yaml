@@ -20,7 +20,7 @@ jobs:
           override: true
         # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \
+          sudo apt install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
@@ -47,7 +47,7 @@ jobs:
       - run: rustup component add rustfmt
         # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \
+          sudo apt install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
@@ -74,7 +74,7 @@ jobs:
           override: true
         # tauri deps
       - run: |
-          install libwebkit2gtk-4.0-dev \
+          sudo apt install libwebkit2gtk-4.0-dev \
             build-essential \
             curl \
             wget \
