@@ -84,6 +84,8 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             libsoup2.4-dev
+        # without this, a Tauri proc macro fails when run via clippy
+      - run: mkdir dist
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
