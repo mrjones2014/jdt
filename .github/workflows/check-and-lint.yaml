@@ -18,6 +18,18 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+        # tauri deps
+      - run: |
+          sudo apt install libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libsoup2.4-dev
       - uses: actions-rs/cargo@v1
         with:
           command: check
@@ -33,6 +45,18 @@ jobs:
           toolchain: stable
           override: true
       - run: rustup component add rustfmt
+        # tauri deps
+      - run: |
+          sudo apt install libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libsoup2.4-dev
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
@@ -48,6 +72,20 @@ jobs:
           toolchain: stable
           components: clippy
           override: true
+        # tauri deps
+      - run: |
+          sudo apt install libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libsoup2.4-dev
+        # without this, a Tauri proc macro fails when run via clippy
+      - run: mkdir dist
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

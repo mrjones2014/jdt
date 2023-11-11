@@ -1,3 +1,15 @@
 [workspace]
-members = ["./image-repo", "./repogen", "./viewmodel-api", "./encoding"]
-exclude = ["./src-tauri"]
+members = [
+  "./image-repo",
+  "./repogen",
+  "./viewmodel-api",
+  "./encoding",
+  "./src-tauri",
+]
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order"] }
+reqwest = { version = "0.11", features = ["json", "blocking"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "fs"] }
+tokio-stream = { version = "0.1", features = ["fs"] }
