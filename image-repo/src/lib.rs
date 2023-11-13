@@ -1,8 +1,12 @@
+#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+
 use types::ImageRepo;
 use url::ParseError;
 
 pub mod types;
 pub use reqwest::Url;
+
+pub use encoding::RegexError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -22,6 +26,11 @@ impl From<reqwest::Error> for Error {
     }
 }
 
+/// Download a repository JSON file from a URL and parse it to an [`types::ImageRepo`]
+///
+/// # Errors
+///
+/// [`Error`]
 pub async fn download_repo_manifest<T>(url: T) -> Result<ImageRepo, Error>
 where
     T: AsRef<str>,

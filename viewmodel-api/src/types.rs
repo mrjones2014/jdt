@@ -30,12 +30,16 @@ where
 /// something that should be stored to disk.
 pub trait TryIntoStoragePath {
     /// Get the full, absolute filepath that the resource should be stored at.
+    ///
+    /// # Errors
+    ///
+    /// [`crate::Error`]
     fn try_into_storage_path(&self) -> Result<PathBuf>;
 }
 
 impl TryIntoStoragePath for ImageRepo {
     fn try_into_storage_path(&self) -> Result<PathBuf> {
-        let file_name = self.to_file_name();
+        let file_name = self.to_file_name()?;
         storage_root(ResourceType::Repo).map(|root| root.join(file_name))
     }
 }
@@ -95,8 +99,8 @@ pub enum UpdateInterval {
 impl From<UpdateInterval> for Duration {
     fn from(val: UpdateInterval) -> Self {
         match val {
-            UpdateInterval::Days(n) => Duration::from_secs(ONE_DAY * (n as u64)),
-            UpdateInterval::Weeks(n) => Duration::from_secs(ONE_WEEK * (n as u64)),
+            UpdateInterval::Days(n) => Duration::from_secs(ONE_DAY * u64::from(n)),
+            UpdateInterval::Weeks(n) => Duration::from_secs(ONE_WEEK * u64::from(n)),
         }
     }
 }
