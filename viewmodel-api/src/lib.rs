@@ -1,3 +1,5 @@
+#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+
 pub mod error;
 pub mod types;
 pub mod viewmodels;
@@ -24,13 +26,17 @@ const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
 
-#[derive(Debug, EnumIter, Serialize, Deserialize)]
+#[derive(Debug, EnumIter, Serialize, Deserialize, Clone, Copy)]
 pub enum ResourceType {
     Repo,
     Image,
 }
 
 /// Get the toplevel storage root directory for the given storage type.
+///
+/// # Errors
+///
+/// [`crate::Error`]
 pub fn storage_root(resource_type: ResourceType) -> Result<PathBuf> {
     match resource_type {
         ResourceType::Repo => {
@@ -43,6 +49,9 @@ pub fn storage_root(resource_type: ResourceType) -> Result<PathBuf> {
     .ok_or(Error::FailedToGetStorageDir)
 }
 
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn init_storage() -> Result<()> {
     for root in ResourceType::iter() {
         let root = storage_root(root)?;
@@ -55,6 +64,9 @@ pub async fn init_storage() -> Result<()> {
 }
 
 /// Store the given resource.
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn store_resource<T>(resource: &T, bytes: &[u8], overwrite: bool) -> Result<PathBuf>
 where
     T: TryIntoStoragePath,
@@ -78,6 +90,10 @@ where
 
 /// Load the resource if it exists locally. Does not connect to the internet to download
 /// the resource.
+///
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn local_load_resource<T>(resource: T) -> Result<Vec<u8>>
 where
     T: TryIntoStoragePath,
@@ -108,6 +124,10 @@ where
 /// let (img_data, img_file_path) = viewmodel_api::download_resource_to_file(img_repo.images[0].clone(), false /* overwrite? */).await.unwrap();
 /// # }
 /// ```
+///
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn download_resource_to_file<T, V>(
     downloadable: T,
     overwrite: bool,
@@ -123,6 +143,10 @@ where
 
 /// Check if a file has not been updated since longer than the specified interval.
 /// This checks the file modified metadata.
+///
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Result<bool> {
     let metadata = fs::metadata(path).await?;
     let modified_time = metadata.modified()?;
@@ -133,6 +157,10 @@ pub async fn needs_update(path: &PathBuf, update_interval: UpdateInterval) -> Re
 }
 
 /// List all insatlled image repositories.
+///
+/// # Errors
+///
+/// [`crate::Error`]
 pub async fn list_repositories() -> Result<Vec<RepositoryViewModel>> {
     let storage_root = storage_root(ResourceType::Repo)?;
     let mut repos = vec![];
