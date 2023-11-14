@@ -1,7 +1,6 @@
-use std::{fmt::Display, path::PathBuf, string::FromUtf8Error};
-
-use image_repo::types::ChecksumError;
+use image_repo::{types::ChecksumError, RegexError};
 use reqwest::StatusCode;
+use std::{fmt::Display, path::PathBuf, string::FromUtf8Error};
 
 /// Errors that can occur dealing with syncing local storage
 #[derive(Debug)]
@@ -28,6 +27,8 @@ pub enum Error {
     FileMetadataFailed,
     /// Update URL field of JSON is different from the URL the file was downlaoded from.
     InvalidUpdateUrl((String, String)),
+    /// Couldn't generate a safe filename. Should never happen.
+    ToSafeFilename(RegexError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -50,9 +51,10 @@ impl Display for Error {
                 Error::FileNotFound(path) => format!("No such file: {}", path.to_string_lossy()),
                 Error::FileMetadataFailed => "Failed to process file metadata.".to_string(),
                 Error::InvalidUpdateUrl((expected, received)) => format!(
-                    "Repository JSON file was downloaded from {} but specifies update URL as {}",
-                    expected, received
+                    "Repository JSON file was downloaded from {expected} but specifies update URL as {received}",
                 ),
+                Error::ToSafeFilename(regex_err) =>
+                    format!("Could not generate a safe filename string: {regex_err}"),
             }
         )
     }
@@ -61,6 +63,12 @@ impl Display for Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         None
+    }
+}
+
+impl From<RegexError> for Error {
+    fn from(value: RegexError) -> Self {
+        Error::ToSafeFilename(value)
     }
 }
 

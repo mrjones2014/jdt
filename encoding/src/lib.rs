@@ -1,5 +1,8 @@
+#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+pub use regex::Error as RegexError;
 use regex::Regex;
 
+#[must_use]
 pub fn checksum_string(data: &[u8]) -> String {
     let hash = ring::digest::digest(&ring::digest::SHA256, data);
     data_encoding::HEXLOWER.encode(hash.as_ref())
@@ -17,10 +20,14 @@ fn windows_extra_safe<S: AsRef<str>>(input: S) -> String {
     }
 }
 
-pub fn safe_filename<S: AsRef<str>>(input: S) -> String {
-    let reserved_chars =
-        Regex::new("[<>:\"/\\\\|?*\u{0000}-\u{001F}\u{007F}\u{0080}-\u{009F}]+").unwrap();
-    let outer_edge_periods = Regex::new("^\\.+|\\.+$").unwrap();
+/// Get a string safe for filename.
+///
+/// # Errors
+///
+/// Fails if regex fails to compile (should never happen).
+pub fn safe_filename<S: AsRef<str>>(input: S) -> Result<String, regex::Error> {
+    let reserved_chars = Regex::new("[<>:\"/\\\\|?*\u{0000}-\u{001F}\u{007F}\u{0080}-\u{009F}]+")?;
+    let outer_edge_periods = Regex::new("^\\.+|\\.+$")?;
 
     let result = reserved_chars.replace_all(input.as_ref(), FILENAME_SAFE_CHAR);
     let result = outer_edge_periods.replace_all(result.as_ref(), FILENAME_SAFE_CHAR);
@@ -28,7 +35,7 @@ pub fn safe_filename<S: AsRef<str>>(input: S) -> String {
     #[cfg(target_os = "windows")]
     let result = windows_extra_safe(result);
 
-    result.to_string()
+    Ok(result.to_string())
 }
 
 #[cfg(test)]
@@ -37,7 +44,7 @@ mod tests {
 
     macro_rules! filename {
         ($input:expr, $output:expr) => {
-            let result = crate::safe_filename($input);
+            let result = crate::safe_filename($input).unwrap();
             assert_eq!(result, $output);
         };
     }

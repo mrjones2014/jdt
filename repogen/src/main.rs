@@ -1,8 +1,9 @@
-use std::{env, error::Error, fmt::Display, io::Read};
+#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
 
 use colored_json::ToColoredJson;
 use image_repo::types::ImageData;
 use reqwest::StatusCode;
+use std::{env, error::Error, fmt::Display, io::Read};
 use url::Url;
 
 #[derive(Debug)]
@@ -42,7 +43,7 @@ fn main() {
             continue;
         }
 
-        let mut http_resp = http_resp.unwrap();
+        let mut http_resp = http_resp.expect("HTTP Failed");
         if http_resp.status() != StatusCode::OK {
             errors.push(Box::new(Errors::HttpFailed));
             continue;
@@ -55,27 +56,31 @@ fn main() {
 
         eprintln!("Decoding image...");
 
-        let img_data = ImageData::try_from((Url::parse(&url).unwrap(), img_bytes));
+        let img_data = ImageData::try_from((Url::parse(&url).expect("Invalid URL"), img_bytes));
         if let Err(e) = img_data {
             errors.push(Box::new(e));
             continue;
         }
-        let img_data = img_data.unwrap();
+        let img_data = img_data.expect("Failed to decode response");
         images.push(img_data);
 
         eprintln!("Successfully processed image!");
     }
 
-    let json = serde_json::to_string_pretty(&images).unwrap();
+    let json = serde_json::to_string_pretty(&images).expect("Failed to serialize image data.");
 
     #[cfg(target_os = "windows")]
     let _ = colored_json::enable_ansi_support();
 
-    println!("{}", json.to_colored_json_auto().unwrap());
+    println!(
+        "{}",
+        json.to_colored_json_auto()
+            .expect("Failed to init output colorizer.")
+    );
 
     if !errors.is_empty() {
         eprintln!("{} images failed to process:", errors.len());
-        for error in errors.iter() {
+        for error in &errors {
             eprintln!("    {error}");
         }
     }

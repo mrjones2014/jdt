@@ -46,8 +46,7 @@ impl std::fmt::Display for ChecksumError {
         };
         write!(
             f,
-            "Checksums do not match. Expected {} but got {}",
-            expected, received
+            "Checksums do not match. Expected {expected} but got {received}",
         )
     }
 }
@@ -62,6 +61,10 @@ impl ImageData {
     /// Given a byte slice, get a SHA256 checksum of it and
     /// verify that it matches the [`ImageData::hash`] property stored
     /// in this [`ImageData`].
+    ///
+    /// # Errors
+    ///
+    /// [`ChecksumError`]
     pub fn verify_checksum(&self, img_bytes: &[u8]) -> Result<(), ChecksumError> {
         let hash = encoding::checksum_string(img_bytes);
         if hash == self.hash {
@@ -74,6 +77,7 @@ impl ImageData {
     /// Deterministically generate the filepath tail for the given
     /// [`ImageData`]. This path should be appended to the storage
     /// root under `$XDG_CACHE_HOME` before storing.
+    #[must_use]
     pub fn to_file_name(&self) -> String {
         format!("{}.{}", self.hash, self.format)
     }
@@ -91,16 +95,20 @@ pub struct ImageRepo {
 }
 
 impl ImageRepo {
-    pub fn to_file_name(&self) -> String {
+    /// Get a safe file name string.
+    ///
+    /// # Errors
+    ///
+    /// Errors if regex fails to compile (should never happen).
+    pub fn to_file_name(&self) -> Result<String, encoding::RegexError> {
         let raw_filename = [
             self.name.to_string(),
             self.update_url
                 .clone()
-                .map(|url| url.to_string())
-                .unwrap_or_else(|| "".into()),
+                .map_or_else(String::new, |url| url.to_string()),
         ]
         .join(",");
-        format!("{}.json", encoding::safe_filename(raw_filename))
+        Ok(format!("{}.json", encoding::safe_filename(raw_filename)?))
     }
 }
 
@@ -157,9 +165,8 @@ impl TryFrom<(Url, &[u8])> for ImageData {
     fn try_from((url, img_bytes): (Url, &[u8])) -> Result<Self, Self::Error> {
         use image::GenericImageView;
         use std::io::Cursor;
-        let format = if let Some(format) = imghdr::from_bytes(img_bytes) {
-            format
-        } else {
+
+        let Some(format) = imghdr::from_bytes(img_bytes) else {
             return Err(ImgError::CouldntDetectFormat);
         };
         let format = match format {
@@ -181,10 +188,10 @@ impl TryFrom<(Url, &[u8])> for ImageData {
 
         Ok(ImageData {
             url,
+            hash,
             width,
             height,
             format,
-            hash,
         })
     }
 }
@@ -200,7 +207,8 @@ mod tests {
         let repo_json = include_str!("../examples/example_repo.json");
         let result = serde_json::from_str::<ImageRepo>(repo_json);
         assert!(result.is_ok());
-        let repo = result.unwrap();
+
+        let repo = result.expect("image_repo");
         assert!(!repo.images.is_empty());
     }
 
@@ -208,12 +216,13 @@ mod tests {
     #[cfg(feature = "decoding")]
     fn decodes_from_btye_vec() {
         let img_bytes = include_bytes!("../ferris.png").to_vec();
-        let url = Url::parse("https://rustacean.net/assets/rustacean-flat-noshadow.png").unwrap();
+        let url =
+            Url::parse("https://rustacean.net/assets/rustacean-flat-noshadow.png").expect("url");
         let result = ImageData::try_from((url, img_bytes));
         assert!(result.is_ok());
-        let data = result.unwrap();
+        let data = result.expect("imagedata");
         assert_eq!(
-            serde_json::to_string_pretty(&data).unwrap(),
+            serde_json::to_string_pretty(&data).expect("json string"),
             r#"{
   "url": "https://rustacean.net/assets/rustacean-flat-noshadow.png",
   "hash": "b64500c829882b4abed9d768dbb396569ff1d5e6baf7d274460ab372fe53aadb",

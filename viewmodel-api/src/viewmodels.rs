@@ -37,6 +37,11 @@ async fn file_bytes(path: &PathBuf) -> Result<(File, Vec<u8>)> {
 }
 
 impl RepositoryViewModel {
+    /// Read the file specified by the [`PathBuf`] and parse to a [`RepositoryViewModel`]
+    ///
+    /// # Errors
+    ///
+    /// [`crate::Error`]
     pub async fn from_path(path: PathBuf) -> Result<RepositoryViewModel> {
         let (file, file_bytes) = file_bytes(&path).await?;
         let repo = serde_json::from_slice::<ImageRepo>(file_bytes.as_slice())?;
@@ -49,6 +54,11 @@ impl RepositoryViewModel {
         })
     }
 
+    /// Convert an [`ImageRepo`] to a [`RepositoryViewModel`]
+    ///
+    /// # Errors
+    ///
+    /// [`crate::Error`]
     pub async fn from_resource(repo: ImageRepo, path: PathBuf) -> Result<RepositoryViewModel> {
         let (file, _) = file_bytes(&path).await?;
         Ok(Self {

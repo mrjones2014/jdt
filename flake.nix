@@ -9,37 +9,62 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        libraries = with pkgs;
-          [ gtk3 cairo gdk-pixbuf glib dbus openssl_3 librsvg ]
-          ++ lib.lists.optionals
-          (system != "x86_64-darwin" && system != "aarch64-darwin")
-          [ webkitgtk ]; # webkitgtk is broken on darwin currently
+        libraries-both = with pkgs; [
+          gtk3
+          cairo
+          gdk-pixbuf
+          glib
+          dbus
+          openssl_3
+          librsvg
+        ];
 
-        packages = with pkgs;
-          [
-            curl
-            wget
-            pkg-config
-            dbus
-            openssl_3
-            glib
-            gtk3
-            libsoup
-            librsvg
-            cargo
-            rustc
-            git
-            clippy
-            rust-analyzer
-            libiconv
-            nodejs_20
-            nodePackages_latest.pnpm
-            typeshare
-            cargo-tauri
-            tailwindcss-language-server
-          ] ++ lib.lists.optionals
-          (system != "x86_64-darwin" && system != "aarch64-darwin")
-          [ webkitgtk ];
+        libraries-linux = with pkgs; [ webkitgtk ];
+
+        libraries-darwin = with pkgs; [ darwin.apple_sdk.frameworks.WebKit ];
+
+        packages-both = with pkgs; [
+          cargo
+          rustc
+          git
+          clippy
+          rust-analyzer
+          libiconv
+          nodejs_20
+          nodePackages_latest.pnpm
+          typeshare
+          cargo-tauri
+          tailwindcss-language-server
+          rustfmt
+        ];
+
+        packages-linux = with pkgs; [
+          nodejs-18_x
+          nodePackages.pnpm
+          pkg-config
+          gtk3
+          webkitgtk
+          libayatana-appindicator.dev
+          alsa-lib.dev
+        ];
+
+        packages-darwin = with pkgs; [
+          nodejs-18_x
+          nodePackages.pnpm
+          curl
+          wget
+          pkg-config
+          libiconv
+          darwin.apple_sdk.frameworks.WebKit
+        ];
+
+        isLinux = system != "x86_64-darwin" && system != "aarch64-darwin";
+
+        libraries = (if isLinux then libraries-linux else libraries-darwin)
+          ++ libraries-both;
+        packages = (if isLinux then packages-linux else packages-darwin)
+          ++ packages-both;
+
       in {
         devShell = pkgs.mkShell {
           buildInputs = packages;
