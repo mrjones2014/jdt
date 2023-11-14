@@ -7,10 +7,9 @@ edition = "2021"
 
 [dependencies]
 more-wallpapers = {version = "0.3.1", features = ["fallback"]}
-tauri = { version = "1.5", features = ["shell-open"] }
 
 [lib]
-name = "jdtwallpaper"
+name = "wallpaper-bindings"
 path = "src/lib.rs"
 
 [[bin]]
