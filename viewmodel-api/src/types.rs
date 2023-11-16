@@ -50,6 +50,7 @@ impl TryIntoStoragePath for ImageData {
     }
 }
 
+/// Represents a downloadable resource (either an image repo JSON file, or an image file).
 #[async_trait]
 pub trait DownloadableResource<T>
 where
@@ -88,11 +89,14 @@ impl DownloadableResource<ImageData> for ImageData {
     }
 }
 
+/// Interval to auto-update installed image repositories
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase", tag = "type", content = "content")]
 #[typeshare]
 pub enum UpdateInterval {
+    /// Update every x days
     Days(u8),
+    /// Update every x weeks
     Weeks(u8),
 }
 

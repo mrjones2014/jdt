@@ -1,4 +1,13 @@
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+#![deny(
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    rust_2018_idioms,
+    clippy::unwrap_used
+)]
+
+//! A little tool for generating [`image_repo::ImageData`] JSON objects
+//! for images from URLs.
 
 use colored_json::ToColoredJson;
 use image_repo::types::ImageData;

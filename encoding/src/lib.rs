@@ -1,7 +1,18 @@
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+#![deny(
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    rust_2018_idioms,
+    clippy::unwrap_used
+)]
+
+//! A crate encapsulating any encoding/decoding logic we might need,
+//! like getting checksums or encoding/decoding image data, etc.
+
 pub use regex::Error as RegexError;
 use regex::Regex;
 
+/// Get an SHA256 checksum of the provided data as a string encoded with [`data_encoding::HEXLOWER`].
 #[must_use]
 pub fn checksum_string(data: &[u8]) -> String {
     let hash = ring::digest::digest(&ring::digest::SHA256, data);
