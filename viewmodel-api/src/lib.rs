@@ -1,7 +1,20 @@
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+#![deny(
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    rust_2018_idioms,
+    clippy::unwrap_used
+)]
 
+//! An interface between the Tauri app and the filesystem. All filesystem interaction
+//! should be done in this crate, and the results converted into a format suitable
+//! for display by the Tauri app.
+
+/// Error types and traits
 pub mod error;
+/// Types and traits for interacting with the viewmodel API.
 pub mod types;
+/// Viewmodel types to be used via JSON on the frontend.
 pub mod viewmodels;
 
 use error::Error;
@@ -26,9 +39,12 @@ const STORAGE_ROOT: &str = "jdt-debug";
 #[cfg(not(debug_assertions))]
 const STORAGE_ROOT: &str = "jdt";
 
+/// Types of resources that can be downloaded.
 #[derive(Debug, EnumIter, Serialize, Deserialize, Clone, Copy)]
 pub enum ResourceType {
+    /// Image repository JSON files
     Repo,
+    /// Image files
     Image,
 }
 
@@ -49,6 +65,9 @@ pub fn storage_root(resource_type: ResourceType) -> Result<PathBuf> {
     .ok_or(Error::FailedToGetStorageDir)
 }
 
+/// Initialize the application's storage by creating
+/// required directories on disk.
+///
 /// # Errors
 ///
 /// [`crate::Error`]
@@ -64,6 +83,7 @@ pub async fn init_storage() -> Result<()> {
 }
 
 /// Store the given resource.
+///
 /// # Errors
 ///
 /// [`crate::Error`]

@@ -13,3 +13,7 @@ check: # TODO add frontend checks like eslint, prettier, etc.
 # Specifically this comment: https://github.com/tauri-apps/tauri/issues/5143#issuecomment-1311815517
 run:
 	WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
+
+docs:
+	# If running in CI, only generate the files, don't try to open web browser
+	if [ "${CI}" != "" ]; then cargo doc --no-deps; else cargo doc --no-deps --open; fi

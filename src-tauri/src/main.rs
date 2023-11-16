@@ -1,6 +1,15 @@
-#![deny(clippy::all, clippy::pedantic, rust_2018_idioms, clippy::unwrap_used)]
+#![deny(
+    missing_docs,
+    clippy::all,
+    clippy::pedantic,
+    rust_2018_idioms,
+    clippy::unwrap_used
+)]
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+//! Main Tauri application crate.
+//! This is where Tauri FFI bindings should live.
 
 mod api;
 

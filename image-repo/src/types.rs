@@ -1,10 +1,13 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
+/// Supported image formats
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum SupportedFormat {
+    /// JPG/JPEG images
     Jpg,
+    /// PNG images
     Png,
 }
 
@@ -21,16 +24,23 @@ impl std::fmt::Display for SupportedFormat {
     }
 }
 
+/// Metadata about the image, as well as the URL to download it from.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageData {
+    /// Download URL for the image
     pub url: Url,
+    /// SHA256 hash of the image bytes
     pub hash: String,
+    /// Image width
     pub width: u32,
+    /// Image height
     pub height: u32,
+    /// Image format
     pub format: SupportedFormat,
 }
 
+/// Error checking the checksum of downloaded file vs. expected checksum
 #[derive(Debug)]
 pub enum ChecksumError {
     /// Checksums do not match. The contained value
@@ -83,14 +93,19 @@ impl ImageData {
     }
 }
 
+/// Repository metadata, including a list of [`image_repo::types::ImageData`]
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageRepo {
+    /// Repository name
     pub name: String,
+    /// Repository description
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    /// Repository update URL
     #[serde(skip_serializing_if = "Option::is_none")]
     pub update_url: Option<Url>,
+    /// The list of [`image_repo::types::ImageData`] the repository provides
     pub images: Vec<ImageData>,
 }
 
@@ -112,11 +127,15 @@ impl ImageRepo {
     }
 }
 
+/// Errors that can occur while processing the image
 #[cfg(feature = "decoding")]
 #[derive(Debug)]
 pub enum ImgError {
+    /// Failed to detect image format.
     CouldntDetectFormat,
+    /// Unsupported image format. Associated value is the format name.
     UnsupportedFormat(String),
+    /// Failed to decode the image data.
     DecodingFailed(image::ImageError),
 }
 

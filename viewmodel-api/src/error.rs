@@ -31,6 +31,7 @@ pub enum Error {
     ToSafeFilename(RegexError),
 }
 
+/// Type alias to [`Result<T, viewmodel_api::error::Error>`]
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl Display for Error {

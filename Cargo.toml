@@ -7,6 +7,11 @@ members = [
   "./src-tauri",
 ]
 
+# We're using Rust 2021 edition which defaults
+# resolver version 3, but virtual workspaces default
+# to resolver version 1; use resolver version 2
+resolver = "2"
+
 [workspace.dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use tokio::{fs::File, io::AsyncReadExt};
 use typeshare::typeshare;
 
+/// A view-friendly representation of an [`image_repo::types::ImageRepo`]
 #[typeshare]
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
