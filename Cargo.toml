@@ -5,7 +5,9 @@ members = [
   "./viewmodel-api",
   "./encoding",
   "./src-tauri",
+  "./wallpaper-bindings"
 ]
+exclude = ["./src-tauri"]
 
 [workspace.dependencies]
 serde = { version = "1.0", features = ["derive"] }
